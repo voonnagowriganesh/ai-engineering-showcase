@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#05030f" />
+
+    <title>Voonna Gowri Ganesh — AI Developer &amp; Full-Stack Product Engineer</title>
+    <meta
+      name="description"
+      content="AI Developer and Full-Stack Product Engineer building intelligent products with Python, FastAPI, LangGraph, React and production AI systems. Based in Hyderabad, India."
+    />
+    <meta name="author" content="Voonna Gowri Ganesh" />
+    <link rel="canonical" href="https://voonnagowriganesh.vercel.app/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://voonnagowriganesh.vercel.app/" />
+    <meta
+      property="og:title"
+      content="Voonna Gowri Ganesh — AI Developer &amp; Full-Stack Product Engineer"
+    />
+    <meta
+      property="og:description"
+      content="Building intelligent products through AI, full-stack engineering and system design."
+    />
+    <meta property="og:image" content="https://voonnagowriganesh.vercel.app/og-image.svg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Voonna Gowri Ganesh — AI Developer &amp; Full-Stack Product Engineer"
+    />
+    <meta
+      name="twitter:description"
+      content="Building intelligent products through AI, full-stack engineering and system design."
+    />
+    <meta name="twitter:image" content="https://voonnagowriganesh.vercel.app/og-image.svg" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+
+    <!--
+      Theme bootstrap. Runs before the stylesheet paints so the correct palette
+      is applied on the very first frame — without this the page would flash the
+      default theme before React mounts.
+      Keep the storage key and attribute in sync with ThemeService.
+    -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('vgg.theme');
+          var theme =
+            stored === 'light' || stored === 'dark'
+              ? stored
+              : stored === 'system'
+                ? window.matchMedia('(prefers-color-scheme: dark)').matches
+                  ? 'dark'
+                  : 'light'
+                : 'dark';
+          document.documentElement.setAttribute('data-theme', theme);
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.content = theme === 'dark' ? '#05030f' : '#f4f3fd';
+        } catch (error) {
+          /* Blocked storage — the default dark theme in the markup stands. */
+        }
+      })();
+    </script>
+
+
+    <!--
+      Zero-JS boot screen. The React preloader cannot paint until the bundle has
+      downloaded and mounted, which on a slow connection leaves several seconds
+      of blank page. This paints with the first HTML bytes and is removed by the
+      app on mount, so the two overlap rather than flash.
+      Styles are inline on purpose: an external stylesheet would be one more
+      round trip before anything appears.
+    -->
+    <style>
+      #boot {
+        position: fixed;
+        inset: 0;
+        z-index: 500;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        background: #05030f;
+        font-family: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+        transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      html[data-theme='light'] #boot {
+        background: #f4f3fd;
+      }
+      #boot[hidden] {
+        display: none;
+      }
+      #boot-mark {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 4rem;
+        height: 4rem;
+        border-radius: 1rem;
+        border: 1px solid rgb(168 85 247 / 0.35);
+        background: #0c0920;
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        background-image: linear-gradient(135deg, #22e0ff, #a855f7, #ff5cf0);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        box-shadow: 0 0 40px -8px rgb(168 85 247 / 0.5);
+      }
+      html[data-theme='light'] #boot-mark {
+        background-color: #ffffff;
+        border-color: rgb(109 40 255 / 0.25);
+        background-image: linear-gradient(135deg, #0098c7, #6d28ff, #d916c7);
+      }
+      #boot-rail {
+        position: relative;
+        width: min(22rem, 70vw);
+        height: 1px;
+        overflow: hidden;
+        background: #241d47;
+      }
+      html[data-theme='light'] #boot-rail {
+        background: #e3e0f6;
+      }
+      #boot-rail::after {
+        content: '';
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 40%;
+        background: linear-gradient(90deg, transparent, #a855f7, #22e0ff, transparent);
+        animation: boot-sweep 1.15s ease-in-out infinite;
+      }
+      #boot-label {
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
+        font-size: 0.6875rem;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: #726ea8;
+      }
+      @keyframes boot-sweep {
+        0% {
+          transform: translateX(-100%);
+        }
+        100% {
+          transform: translateX(350%);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #boot-rail::after {
+          animation: none;
+          width: 100%;
+        }
+      }
+    </style>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap"
+    />
+
+    <!-- Structured data: lets search engines read the profile as a person -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Voonna Gowri Ganesh",
+        "jobTitle": "AI Developer",
+        "description": "AI Developer and Full-Stack Product Engineer building intelligent products through AI, full-stack engineering and system design.",
+        "email": "mailto:voonnagowriganesh@gmail.com",
+        "url": "https://voonnagowriganesh.vercel.app/",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Hyderabad",
+          "addressCountry": "IN"
+        },
+        "worksFor": { "@type": "Organization", "name": "Techgene Solutions" },
+        "alumniOf": {
+          "@type": "CollegeOrUniversity",
+          "name": "S.R.K Institute of Technology"
+        },
+        "knowsAbout": [
+          "Generative AI",
+          "Large Language Models",
+          "Agentic AI",
+          "LangGraph",
+          "Retrieval-Augmented Generation",
+          "Python",
+          "FastAPI",
+          "React",
+          "System Design"
+        ],
+        "sameAs": [
+          "https://github.com/voonnagowriganesh",
+          "https://www.linkedin.com/in/voonna-gowri-ganesh"
+        ]
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <div id="boot" role="status" aria-label="Loading portfolio">
+      <div id="boot-mark">VG</div>
+      <div id="boot-rail"></div>
+      <div id="boot-label">Voonna Gowri Ganesh</div>
+    </div>
+    <noscript>
+      <div style="padding: 3rem 1.5rem; font-family: system-ui, sans-serif; max-width: 42rem">
+        <h1 style="font-size: 1.5rem; margin: 0 0 0.75rem">Voonna Gowri Ganesh</h1>
+        <p style="margin: 0 0 1rem; line-height: 1.6">
+          AI Developer and Full-Stack Product Engineer in Hyderabad, India. This portfolio needs
+          JavaScript to run.
+        </p>
+        <p style="margin: 0; line-height: 1.6">
+          Reach me at
+          <a href="mailto:voonnagowriganesh@gmail.com">voonnagowriganesh@gmail.com</a> or download
+          my <a href="/resume/Voonna_Gowri_Ganesh_Resume.pdf">résumé</a>.
+        </p>
+      </div>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

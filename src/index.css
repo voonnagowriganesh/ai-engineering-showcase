@@ -1,0 +1,566 @@
+@import 'tailwindcss';
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEME VARIANT
+   Dark mode is driven by data-theme="dark" on <html>, set by ThemeService
+   before first paint (see the inline bootstrap in index.html) so there is no
+   flash of incorrect theme.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESIGN TOKENS
+   @theme maps Tailwind utilities onto runtime custom properties (--c-*).
+   The indirection is deliberate: CSS variable substitution is lazy, so
+   redefining --c-* under [data-theme] re-themes every utility instantly
+   without duplicating a single utility class.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@theme {
+  /* Surfaces */
+  --color-canvas: var(--c-canvas);
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-elevated: var(--c-elevated);
+
+  /* Content */
+  --color-ink: var(--c-ink);
+  --color-ink-muted: var(--c-ink-muted);
+  --color-ink-subtle: var(--c-ink-subtle);
+  --color-ink-inverse: var(--c-ink-inverse);
+
+  /* Lines */
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+
+  /* Brand spectrum */
+  --color-accent: var(--c-accent);
+  --color-accent-2: var(--c-accent-2);
+  --color-accent-3: var(--c-accent-3);
+  --color-accent-4: var(--c-accent-4);
+  --color-accent-soft: var(--c-accent-soft);
+  --color-accent-contrast: var(--c-accent-contrast);
+
+  /* Glass */
+  --color-glass: var(--c-glass);
+  --color-glass-line: var(--c-glass-line);
+
+  /* Typography */
+  --font-display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+  --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Cascadia Code', ui-monospace, monospace;
+
+  /* Fluid type scale — clamp()-based so every size is responsive by default */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1.45;
+  --text-hero: clamp(2.5rem, 7.1vw, 6.25rem);
+  --text-hero--line-height: 0.92;
+  --text-hero--letter-spacing: -0.04em;
+  --text-display: clamp(2.25rem, 5.5vw, 4.5rem);
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.03em;
+  --text-headline: clamp(1.75rem, 3.4vw, 2.75rem);
+  --text-headline--line-height: 1.1;
+  --text-headline--letter-spacing: -0.02em;
+  --text-lede: clamp(1.0625rem, 1.9vw, 1.375rem);
+  --text-lede--line-height: 1.6;
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Radii */
+  --radius-card: 1.25rem;
+  --radius-pill: 999px;
+
+  /* Named animations */
+  --animate-marquee: marquee 42s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 42s linear infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-pulse-ring: pulse-ring 2.6s var(--ease-out-expo) infinite;
+  --animate-shimmer: shimmer 2.4s linear infinite;
+  --animate-caret: caret 1.1s steps(1) infinite;
+  --animate-gradient-pan: gradient-pan 7s ease-in-out infinite;
+  --animate-glow-drift: glow-drift 11s ease-in-out infinite;
+}
+
+/* ── Light theme (default) ──────────────────────────────────────────────────
+   A genuinely designed light mode, not an inverted dark mode: warm porcelain
+   surfaces, ink that never reaches pure black, and accents darkened enough to
+   hold WCAG AA contrast against white.                                      */
+:root {
+  --c-canvas: #f4f3fd;
+  --c-surface: #ffffff;
+  --c-surface-2: #eeebfe;
+  --c-elevated: #ffffff;
+
+  --c-ink: #0b0a1c;
+  --c-ink-muted: #4a4a6b;
+  --c-ink-subtle: #76759a;
+  --c-ink-inverse: #ffffff;
+
+  --c-line: #e3e0f6;
+  --c-line-strong: #c9c4ee;
+
+  --c-accent: #0098c7;
+  --c-accent-2: #6d28ff;
+  --c-accent-3: #d916c7;
+  --c-accent-4: #ff5c8a;
+  --c-accent-soft: #e6f6fc;
+  --c-accent-contrast: #ffffff;
+
+  --c-glass: rgb(255 255 255 / 0.7);
+  --c-glass-line: rgb(109 40 255 / 0.12);
+
+  /* Per-section accent tones (see .tone-* below) */
+  --tone-aqua-1: #0098c7;
+  --tone-aqua-2: #2563eb;
+  --tone-aqua-3: #6d28ff;
+  --tone-indigo-1: #4f46e5;
+  --tone-indigo-2: #6d28ff;
+  --tone-indigo-3: #a21ce0;
+  --tone-magenta-1: #a21ce0;
+  --tone-magenta-2: #d916c7;
+  --tone-magenta-3: #ff5c8a;
+  --tone-emerald-1: #039f7a;
+  --tone-emerald-2: #0098c7;
+  --tone-emerald-3: #2563eb;
+  --tone-amber-1: #d97706;
+  --tone-amber-2: #e8358a;
+  --tone-amber-3: #a21ce0;
+
+  /* Ambient-field intensities consumed by the WebGL hero and the CSS glows */
+  --field-opacity: 0.72;
+  --grain-opacity: 0.035;
+  --glow-strength: 0.45;
+
+  color-scheme: light;
+}
+
+/* ── Dark theme ───────────────────────────────────────────────────────────── */
+:root[data-theme='dark'] {
+  --c-canvas: #05030f;
+  --c-surface: #0c0920;
+  --c-surface-2: #140f2c;
+  --c-elevated: #1b1440;
+
+  --c-ink: #f2f0ff;
+  --c-ink-muted: #a9a6d4;
+  --c-ink-subtle: #726ea8;
+  --c-ink-inverse: #05030f;
+
+  --c-line: #241d47;
+  --c-line-strong: #382d6b;
+
+  --c-accent: #22e0ff;
+  --c-accent-2: #a855f7;
+  --c-accent-3: #ff5cf0;
+  --c-accent-4: #ff7a9c;
+  --c-accent-soft: #0d2f3d;
+  --c-accent-contrast: #05030f;
+
+  --c-glass: rgb(16 11 38 / 0.6);
+  --c-glass-line: rgb(168 85 247 / 0.22);
+
+  /* Per-section accent tones (see .tone-* below) */
+  --tone-aqua-1: #22e0ff;
+  --tone-aqua-2: #4f8cff;
+  --tone-aqua-3: #a855f7;
+  --tone-indigo-1: #6d8bff;
+  --tone-indigo-2: #a855f7;
+  --tone-indigo-3: #ff5cf0;
+  --tone-magenta-1: #c084fc;
+  --tone-magenta-2: #ff5cf0;
+  --tone-magenta-3: #ff7a9c;
+  --tone-emerald-1: #2ce8b4;
+  --tone-emerald-2: #22e0ff;
+  --tone-emerald-3: #4f8cff;
+  --tone-amber-1: #ffb020;
+  --tone-amber-2: #ff5c8a;
+  --tone-amber-3: #c084fc;
+
+  --field-opacity: 1;
+  --grain-opacity: 0.05;
+  --glow-strength: 0.95;
+
+  color-scheme: dark;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BASE
+   ═══════════════════════════════════════════════════════════════════════════ */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-color: var(--color-line);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  /* Lenis drives scrolling once mounted; native smooth scroll would fight it. */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  html.lenis {
+    scroll-behavior: auto;
+  }
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+  .lenis.lenis-stopped {
+    overflow: clip;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv11', 'ss01', 'calt';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+    transition:
+      background-color 0.5s var(--ease-out-expo),
+      color 0.5s var(--ease-out-expo);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--color-accent-2);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Scrollbar — themed, slim, unobtrusive */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-canvas);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line-strong);
+    border: 3px solid var(--color-canvas);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-accent-2);
+  }
+
+  /* Hide the OS cursor only where the custom cursor is actually active. */
+  html[data-cursor='custom'] body,
+  html[data-cursor='custom'] a,
+  html[data-cursor='custom'] button,
+  html[data-cursor='custom'] [role='button'] {
+    cursor: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   COMPONENT PRIMITIVES
+   ═══════════════════════════════════════════════════════════════════════════ */
+@layer components {
+  .glass {
+    background: var(--color-glass);
+    backdrop-filter: blur(20px) saturate(170%);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
+    border: 1px solid var(--color-glass-line);
+  }
+
+  /* Gradient border that survives border-radius, via two masked layers. */
+  .ring-gradient {
+    position: relative;
+    isolation: isolate;
+  }
+  .ring-gradient::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      var(--color-accent) 0%,
+      var(--color-accent-2) 50%,
+      var(--color-accent-3) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    /* Visible at rest so every card carries a hint of the section's colour. */
+    opacity: 0.4;
+    transition: opacity 0.45s var(--ease-out-expo);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .ring-gradient:hover::before,
+  .ring-gradient[data-active='true']::before {
+    opacity: 1;
+  }
+
+  /* Four stops and a panning background: the ramp drifts slowly so gradient
+     text reads as lit rather than as a flat fill. */
+  .text-gradient {
+    background-image: linear-gradient(
+      100deg,
+      var(--color-accent) 0%,
+      var(--color-accent-2) 32%,
+      var(--color-accent-3) 64%,
+      var(--color-accent) 100%
+    );
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    animation: var(--animate-gradient-pan);
+  }
+
+  /* Same ramp, no motion — for very small text where panning reads as noise. */
+  .text-gradient-static {
+    background-image: linear-gradient(
+      100deg,
+      var(--color-accent) 0%,
+      var(--color-accent-2) 50%,
+      var(--color-accent-3) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Soft coloured bloom placed behind a heading or card cluster. */
+  .aura::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -40% -10% auto -10%;
+    height: 22rem;
+    border-radius: 999px;
+    background: radial-gradient(
+      60% 60% at 30% 50%,
+      color-mix(in oklab, var(--color-accent-2) calc(var(--glow-strength) * 34%), transparent),
+      transparent 72%
+    );
+    filter: blur(60px);
+    pointer-events: none;
+  }
+
+  /* Gradient hairline across the top edge of a card. */
+  .edge-gradient::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--color-accent) 20%,
+      var(--color-accent-2) 50%,
+      var(--color-accent-3) 80%,
+      transparent
+    );
+    opacity: 0.55;
+    transition: opacity 0.45s var(--ease-out-expo);
+    pointer-events: none;
+  }
+  .edge-gradient:hover::after {
+    opacity: 1;
+  }
+
+  /* ── Per-section accent tones ──────────────────────────────────────────
+     Each tone re-points the three accent variables, so every descendant —
+     gradients, glows, icons, hairlines — picks up that section's hue without
+     a single component needing to know which section it is in. */
+  .tone-aqua {
+    --color-accent: var(--tone-aqua-1);
+    --color-accent-2: var(--tone-aqua-2);
+    --color-accent-3: var(--tone-aqua-3);
+  }
+  .tone-indigo {
+    --color-accent: var(--tone-indigo-1);
+    --color-accent-2: var(--tone-indigo-2);
+    --color-accent-3: var(--tone-indigo-3);
+  }
+  .tone-magenta {
+    --color-accent: var(--tone-magenta-1);
+    --color-accent-2: var(--tone-magenta-2);
+    --color-accent-3: var(--tone-magenta-3);
+  }
+  .tone-emerald {
+    --color-accent: var(--tone-emerald-1);
+    --color-accent-2: var(--tone-emerald-2);
+    --color-accent-3: var(--tone-emerald-3);
+  }
+  .tone-amber {
+    --color-accent: var(--tone-amber-1);
+    --color-accent-2: var(--tone-amber-2);
+    --color-accent-3: var(--tone-amber-3);
+  }
+
+  .text-stroke {
+    -webkit-text-stroke: 1px var(--color-line-strong);
+    color: transparent;
+  }
+
+  /* Fades a marquee / overflow row into the canvas at both edges. */
+  .mask-edges {
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 8%,
+      #000 92%,
+      transparent
+    );
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+
+  .shimmer-text {
+    background: linear-gradient(
+      90deg,
+      var(--color-ink-subtle) 0%,
+      var(--color-ink) 45%,
+      var(--color-ink-subtle) 90%
+    );
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: var(--animate-shimmer);
+  }
+
+  .grid-field {
+    background-image:
+      linear-gradient(to right, var(--color-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-line) 1px, transparent 1px);
+    background-size: 72px 72px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   KEYFRAMES
+   ═══════════════════════════════════════════════════════════════════════════ */
+@keyframes marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+@keyframes marquee-reverse {
+  from {
+    transform: translate3d(-50%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -14px, 0);
+  }
+}
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+@keyframes shimmer {
+  from {
+    background-position: 220% 0;
+  }
+  to {
+    background-position: -20% 0;
+  }
+}
+@keyframes gradient-pan {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+@keyframes glow-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.75;
+  }
+  50% {
+    transform: translate3d(3%, -4%, 0) scale(1.12);
+    opacity: 1;
+  }
+}
+@keyframes caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ACCESSIBILITY — neutralise decoration, never hide content
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .shimmer-text {
+    color: var(--color-ink);
+    -webkit-text-fill-color: var(--color-ink);
+  }
+  /* The gradient itself stays; only its drift is removed. */
+  .text-gradient {
+    background-size: 100% 100%;
+  }
+}
