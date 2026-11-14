@@ -70,34 +70,37 @@ export function Projects() {
             the next slides up and settles just below it, so you see a deck
             build up rather than one card replacing the last.
 
-            A sticky element only stays stuck for as long as its own flex
-            item still has room left in the document flow, so each slide
-            needs real height of its own (not just a gap) to provide scroll
-            runway — a thin card with a big gap after it releases almost
-            immediately, leaving a dead gap of bare background before the
-            next card's sticky window even starts. The tall (85vh) track
-            wrapping each card provides that runway; the card itself is
-            sized to feel like its own scene (min-h-[420px]) rather than a
-            compact list row. The last card has no track, since nothing
-            needs to slide over it once it's reached. */}
-        <div className="relative mt-16 flex flex-col gap-6">
+            This originally used a separate tall "track" div per card to
+            give it scroll runway, reasoning a sticky element needs extra
+            room behind it. That can't work: a sticky element is bound to
+            its own containing block, and SEQUENTIAL (non-overlapping)
+            containing blocks only ever produce SEQUENTIAL sticky windows —
+            card N released before card N+1's track even began, so in real
+            use (confirmed against the sibling AI Engineering Showcase
+            project, which had the identical bug) it just looked like a
+            plain list with gaps, not a stack.
+
+            The actual mechanism, confirmed by isolating it in a bare test
+            page and measuring which cards sit in the viewport across a
+            scroll sweep: make the CARD ITSELF short relative to the
+            viewport (compact, list-row height, not a tall "scene"), with
+            a small gap between cards. Compact cards is what lets several
+            sticky windows be active at once — a card that's tall relative
+            to the viewport leaves room for at most one other to coexist,
+            and only briefly. */}
+        <div className="relative mt-16 flex flex-col gap-5">
           {projects.map((project, i) => (
             <div
               key={project.id}
-              className="relative"
-              style={i === projects.length - 1 ? undefined : { minHeight: '85vh' }}
+              ref={(el) => {
+                cardRefs.current[i] = el;
+              }}
+              className="sticky"
+              style={{ top: `calc(6rem + ${i * STACK_OFFSET_PX}px)` }}
             >
-              <div
-                ref={(el) => {
-                  cardRefs.current[i] = el;
-                }}
-                className="sticky"
-                style={{ top: `calc(6rem + ${i * STACK_OFFSET_PX}px)` }}
-              >
-                <Reveal delay={(i % 4) * 0.06}>
-                  <ProjectCard project={project} index={i} onOpen={() => setActive(project)} />
-                </Reveal>
-              </div>
+              <Reveal delay={(i % 4) * 0.06}>
+                <ProjectCard project={project} index={i} onOpen={() => setActive(project)} />
+              </Reveal>
             </div>
           ))}
         </div>
