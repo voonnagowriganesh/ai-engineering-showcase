@@ -92,18 +92,30 @@ export function FeaturedProjects(): React.JSX.Element {
                     </span>
                   </div>
 
-                  {/* Generative artwork — derived from the project's own
-                      palette, so no card depends on a generated image that
-                      might bake in text of its own. */}
+                  {/* Real artwork where supplied; otherwise a generative
+                      panel derived from the project's own palette, so no
+                      card depends on a generated image that might bake in
+                      text of its own. */}
                   <div
                     className="relative mt-3.5 flex h-32 items-center justify-center overflow-hidden rounded-2xl border border-stone-200/80 dark:border-emerald-500/30"
-                    style={{
-                      background: `linear-gradient(135deg, ${project.palette[0]}, ${project.palette[1]})`,
-                    }}
+                    style={
+                      project.image
+                        ? undefined
+                        : { background: `linear-gradient(135deg, ${project.palette[0]}, ${project.palette[1]})` }
+                    }
                   >
-                    <span className="grid size-12 place-items-center rounded-2xl border border-white/25 bg-white/15 text-white backdrop-blur-md transition-transform duration-500 group-hover:-translate-y-1">
-                      <Icon icon={project.icon} size={22} />
-                    </span>
+                    {project.image ? (
+                      <img
+                        src={project.image}
+                        alt={project.title}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span className="grid size-12 place-items-center rounded-2xl border border-white/25 bg-white/15 text-white backdrop-blur-md transition-transform duration-500 group-hover:-translate-y-1">
+                        <Icon icon={project.icon} size={22} />
+                      </span>
+                    )}
                     <span className="absolute top-3 right-3 rounded-full border border-white/25 bg-black/25 px-2 py-0.5 font-mono text-[0.625rem] text-white backdrop-blur-md">
                       {project.year}
                     </span>
@@ -167,6 +179,16 @@ export function FeaturedProjects(): React.JSX.Element {
                   <X size={20} />
                 </button>
               </div>
+
+              {selectedProject.image ? (
+                <div className="mt-5 overflow-hidden rounded-2xl border border-emerald-500/20">
+                  <img
+                    src={selectedProject.image}
+                    alt={selectedProject.title}
+                    className="h-auto w-full object-cover"
+                  />
+                </div>
+              ) : null}
 
               <div className="mt-5">
                 <h3 className="font-display text-2xl font-bold text-white">

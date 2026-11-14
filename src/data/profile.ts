@@ -467,6 +467,7 @@ export const projects: readonly Project[] = [
     emphasis: 'feature',
     palette: ['#10b981', '#34d399'],
     icon: Bot,
+    image: '/images/project-voice-ai-system.jpg',
     summary:
       'A real-time, voice-driven multi-agent system: speech in, retrieval-grounded reasoning across specialised agents, speech out — under two seconds end to end.',
     highlights: [
@@ -491,6 +492,7 @@ export const projects: readonly Project[] = [
     emphasis: 'standard',
     palette: ['#0ea5e9', '#38bdf8'],
     icon: Brain,
+    image: '/images/project-ai-resume-parsing.jpg',
     summary:
       'A backend system that ingests unstructured resumes and returns validated, structured candidate records at scale.',
     highlights: [
