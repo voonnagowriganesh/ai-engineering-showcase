@@ -524,6 +524,7 @@ export const projects: readonly Project[] = [
     emphasis: 'feature',
     palette: ['#8b5cf6', '#a855f7'],
     icon: Truck,
+    image: '/images/project-smart-inventory.svg',
     summary:
       'A logistics backend that manages hubs, inventory batches, vehicles and drivers, with automatic FIFO-based dispatch and vehicle/driver assignment.',
     highlights: [
@@ -550,6 +551,7 @@ export const projects: readonly Project[] = [
     emphasis: 'standard',
     palette: ['#06b6d4', '#22d3ee'],
     icon: Users,
+    image: '/images/project-community-family.svg',
     summary:
       'A full-stack registration platform that lets community administrators onboard and manage family records, replacing manual paperwork with a structured, searchable system.',
     highlights: [
@@ -580,6 +582,7 @@ export const projects: readonly Project[] = [
     emphasis: 'standard',
     palette: ['#6366f1', '#818cf8'],
     icon: KeyRound,
+    image: '/images/project-login-auth.svg',
     summary:
       'A FastAPI proof-of-concept exploring production-grade authentication rules: encrypted password storage, forced password rotation and account lockout after repeated failed attempts.',
     highlights: [
@@ -601,6 +604,7 @@ export const projects: readonly Project[] = [
     emphasis: 'standard',
     palette: ['#f59e0b', '#fbbf24'],
     icon: Code,
+    image: '/images/project-food-delivery.svg',
     summary:
       'An end-to-end ordering platform built across React, Express and MongoDB.',
     highlights: [
@@ -626,6 +630,7 @@ export const projects: readonly Project[] = [
     emphasis: 'standard',
     palette: ['#ec4899', '#f472b6'],
     icon: Gauge,
+    image: '/images/project-crime-analysis.svg',
     summary:
       'An academic classification study: preprocessing, feature engineering and KNN modelling, served through a Flask interface.',
     highlights: [
