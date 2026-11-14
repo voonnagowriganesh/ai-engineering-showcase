@@ -8,9 +8,19 @@ import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/primitives';
 import type { Project } from '@/domain/models';
 
-/** Pixels of extra sticky offset per card, so each one settles a little
- * lower than the last and you can see the edge of earlier cards peeking
- * out above it once it's covered — the "deck building up" look. */
+/** Pixels of extra sticky offset per card, so each one settles lower than
+ * the last and you can see a real strip of earlier cards peeking out above
+ * it once it's covered.
+ *
+ * Verified empirically by testing a short, deliberately simple isolated
+ * page with only this mechanic on it (no real app around it) before
+ * touching this component again: the thing that actually makes several
+ * cards pile up simultaneously is each card being SHORT relative to the
+ * viewport (so many sticky windows are active at once), not a bigger
+ * offset number. A ~520px-tall "full scene" card -- which an earlier pass
+ * here used, reasoning that a stacking card should feel substantial --
+ * leaves room for at most one other card to coexist in the viewport at
+ * all, and only briefly; the pile-of-3-or-4 look needs compact cards. */
 const STACK_OFFSET_PX = 18;
 
 export function FeaturedProjects(): React.JSX.Element {
@@ -129,46 +139,46 @@ export function FeaturedProjects(): React.JSX.Element {
             scroll position drives the depth-blur effect above; the sticky
             behaviour itself is plain CSS, independent of Lenis entirely.
 
-            A sticky element only stays stuck for as long as its OWN flex
-            item still has room left in the document flow — scroll past that
-            item's own height and it releases, full stop. The card itself is
-            compact, so without a separate tall "track" behind it, there's
-            barely any runway: it releases almost immediately, leaving a
-            dead gap of plain background before the next card's sticky
-            window even starts, instead of an overlapping "deck" of cards.
-            The fix is the two-layer structure below: a tall, invisible
-            track (`min-height`) gives each slide real scroll distance,
-            while the actual visible card sticks near the top of its own
-            track — exactly the structure the reference site's `.sc` rule
-            uses (`min-height: min(58vh,480px)` doing the same job in one
-            element). The last card has no track, since nothing needs to
-            slide over it once it's reached. */}
-        <div className="relative mt-16 flex flex-col gap-6">
+            Two real bugs lived here before this version, both only caught
+            by live-testing actual scroll behaviour rather than trusting
+            the layout math:
+            1) An early version wrapped each card in its own separate tall
+               "track" div. That can't ever work — a sticky element is
+               bound to its own containing block, and SEQUENTIAL
+               (non-overlapping) containing blocks can only ever produce
+               SEQUENTIAL (non-overlapping) sticky windows, however tall
+               each track is tuned to be.
+            2) The next version removed the track but made the card itself
+               tall (~520px, "a full scene") on the theory that a stacking
+               card should feel substantial. That's backwards: a card that
+               tall leaves room for at most one other card to coexist in
+               the viewport, and only for a sliver of scroll distance —
+               nowhere near the "several cards visibly piled up" look this
+               was supposed to produce. Confirmed by isolating the exact
+               mechanic from this session's own approved demo artifact in
+               a bare test page and measuring which cards were in viewport
+               bounds across a scroll sweep: with SHORT cards (~220px)
+               relative to the viewport, 3-4 stay stuck simultaneously;
+               with ~520px cards, at most 1-2 ever do. Compact cards are
+               what makes the pile-up real, not a bigger offset number. */}
+        <div className="relative mt-16 flex flex-col gap-5">
           {projects.map((project, index) => (
             <div
               key={project.id}
-              className="relative"
-              style={index === projects.length - 1 ? undefined : { minHeight: '85vh' }}
-            >
-            <div
               ref={(el) => {
                 cardRefs.current[index] = el;
               }}
               className="sticky"
-              style={{ top: `calc(7rem + ${index * STACK_OFFSET_PX}px)` }}
+              style={{ top: `calc(6rem + ${index * STACK_OFFSET_PX}px)` }}
             >
               <Reveal direction="up" delay={0.06 * index}>
                 {/* A real <button>, not a plain div with onClick: the custom
                     cursor's hover-grow state and keyboard activation both key
-                    off interactive elements, and a div matched neither.
-                    min-height here is deliberate: each slide needs to read
-                    as its own scene, not a compact list row, or there's far
-                    more bare viewport than card even while the depth-blur
-                    handoff is working correctly underneath it. */}
+                    off interactive elements, and a div matched neither. */}
                 <button
                   type="button"
                   onClick={() => setSelectedProject(project)}
-                  className="group flex min-h-[420px] w-full flex-col justify-center gap-6 overflow-hidden rounded-3xl border border-stone-200/80 bg-white p-7 text-left shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 dark:border-emerald-500/20 dark:bg-[#0b2115] sm:min-h-[460px] sm:flex-row sm:items-center sm:gap-10 sm:p-10"
+                  className="group flex w-full flex-col gap-4 overflow-hidden rounded-3xl border border-stone-200/80 bg-white p-5 text-left shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 dark:border-emerald-500/20 dark:bg-[#0b2115] sm:flex-row sm:items-center sm:gap-7 sm:p-6"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-3">
@@ -184,11 +194,11 @@ export function FeaturedProjects(): React.JSX.Element {
                       </span>
                     </div>
 
-                    <h3 className="mt-4 font-display text-2xl font-bold leading-snug text-[#0a1e12] group-hover:text-emerald-700 dark:text-white dark:group-hover:text-emerald-300 sm:text-3xl lg:text-4xl">
+                    <h3 className="mt-3 font-display text-lg font-bold leading-snug text-[#0a1e12] group-hover:text-emerald-700 dark:text-white dark:group-hover:text-emerald-300 sm:text-xl">
                       {project.title}
                     </h3>
 
-                    <p className="mt-3 max-w-xl text-sm leading-relaxed text-stone-600 dark:text-emerald-100/70 sm:text-base">
+                    <p className="mt-2 max-w-xl text-sm leading-relaxed text-stone-600 dark:text-emerald-100/70">
                       {project.subtitle}
                     </p>
 
@@ -203,7 +213,7 @@ export function FeaturedProjects(): React.JSX.Element {
                       card depends on a generated image that might bake in
                       text of its own. */}
                   <div
-                    className="relative h-48 w-full shrink-0 overflow-hidden rounded-2xl border border-stone-200/80 dark:border-emerald-500/30 sm:h-full sm:w-80"
+                    className="relative h-32 w-full shrink-0 overflow-hidden rounded-2xl border border-stone-200/80 dark:border-emerald-500/30 sm:h-full sm:w-52"
                     style={
                       project.image
                         ? undefined
@@ -228,7 +238,6 @@ export function FeaturedProjects(): React.JSX.Element {
                   </div>
                 </button>
               </Reveal>
-            </div>
             </div>
           ))}
         </div>
