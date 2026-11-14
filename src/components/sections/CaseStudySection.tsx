@@ -2,10 +2,16 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowRight, CheckCircle2, Mic, Sparkles, X } from 'lucide-react';
 import { featuredCaseStudy } from '@/data/profile';
+import { useScrollLock } from '@/hooks/useScroll';
 import { Reveal } from '@/components/ui/Reveal';
 
 export function CaseStudySection(): React.JSX.Element {
   const [modalOpen, setModalOpen] = useState(false);
+
+  // Same fix as the Project/About modals and the command palette: this site
+  // scrolls via Lenis, which preventDefaults every wheel event while
+  // stopped unless the target carries data-lenis-prevent (see below).
+  useScrollLock(modalOpen);
 
   return (
     <section className="relative overflow-hidden bg-[#f7f6f0] pb-24 text-[#071910] transition-colors dark:bg-[#06180f] dark:text-white">
@@ -153,6 +159,7 @@ export function CaseStudySection(): React.JSX.Element {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              data-lenis-prevent
               className="relative max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-emerald-500/30 bg-[#071910] p-6 text-white shadow-2xl sm:p-8"
             >
               <div className="flex items-center justify-between pb-4 border-b border-emerald-500/20">
