@@ -1,15 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowRight, CheckCircle2, ExternalLink, X } from 'lucide-react';
 import { projects } from '@/data/profile';
 import { useScrollLock } from '@/hooks/useScroll';
+import { useReducedMotion } from '@/hooks/useInteractions';
 import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/primitives';
-import { cn } from '@/lib/utils';
 import type { Project } from '@/domain/models';
+
+/** Pixels of extra sticky offset per card, so each one settles a little
+ * lower than the last and you can see the edge of earlier cards peeking
+ * out above it once it's covered — the "deck building up" look. */
+const STACK_OFFSET_PX = 18;
 
 export function FeaturedProjects(): React.JSX.Element {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const reduceMotion = useReducedMotion();
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Plain `overflow: hidden` on body isn't enough — this site drives scroll
   // through Lenis (see ScrollService), which scrolls the page via its own
@@ -17,6 +24,47 @@ export function FeaturedProjects(): React.JSX.Element {
   // service the command palette already uses, so Lenis itself is paused
   // while the modal is open, not just the body's native overflow.
   useScrollLock(selectedProject !== null);
+
+  // Depth-of-field: once a card is mostly covered by the next one sliding
+  // up over it, blur and dim it slightly, like the page is racking focus
+  // onto whichever project is currently on top. Pure scroll position read
+  // (never writes scroll, never calls preventDefault), so there's nothing
+  // here for Lenis to fight over — same reasoning as the rest of this
+  // session's Lenis-safety notes. Styles are set directly on the DOM node
+  // instead of through React state so this doesn't trigger a re-render on
+  // every scroll frame.
+  useEffect(() => {
+    if (reduceMotion) return undefined;
+
+    let ticking = false;
+    const update = (): void => {
+      const vh = window.innerHeight;
+      cardRefs.current.forEach((card, index) => {
+        if (!card) return;
+        const next = cardRefs.current[index + 1];
+        const nextTop = next?.getBoundingClientRect().top ?? Infinity;
+        const covered = Math.max(0, vh * 0.42 - nextTop);
+        const isPast = card.getBoundingClientRect().top < vh * 0.3 && covered > 10;
+        const depth = Math.min(1, covered / 160);
+        card.style.filter = isPast ? `blur(${(depth * 3).toFixed(1)}px)` : '';
+        card.style.opacity = isPast ? `${(1 - depth * 0.45).toFixed(2)}` : '1';
+      });
+      ticking = false;
+    };
+    const onScroll = (): void => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    update();
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, [reduceMotion]);
 
   const getTagStyle = (category: string) => {
     switch (category) {
@@ -75,53 +123,79 @@ export function FeaturedProjects(): React.JSX.Element {
           </Reveal>
         </div>
 
-        {/* 7 real projects, every card the same size. A two-column "feature"
-            span was tried here and reverted: it made every card equal width
-            at the sm breakpoint but visibly unequal at lg (one card ~2x the
-            width of its neighbour), which read as inconsistent rather than
-            intentional.
-            When the count doesn't divide evenly by 3, the trailing row has a
-            single card that would otherwise sit left-aligned with two empty
-            cells of bare background beside it — correct per the grid, but it
-            visibly reads as "something's missing" rather than "this is the
-            end of the list". At the 3-column (lg) breakpoint only, that lone
-            last card is shifted into the middle column, so the empty space
-            is split evenly on both sides instead of bunched on one. This is
-            computed from `projects.length`, not hardcoded to 7, so it keeps
-            working if a project is added or removed. Left as-is at the
-            2-column (sm) breakpoint: true centering there would require
-            spanning the item across both columns, which is exactly the kind
-            of per-breakpoint span trick that broke the grid earlier in this
-            same session — the leftover gap is half as wide there anyway, so
-            it's a much smaller visual problem to accept. */}
-        <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project, index) => {
-            const isLonelyLastCard = index === projects.length - 1 && projects.length % 3 === 1;
-            return (
-            <Reveal
+        {/* Cards that stack as you scroll: each one sticks in place while
+            the next slides up and settles just below it, so you see a deck
+            build up rather than one card replacing the last. Read-only
+            scroll position drives the depth-blur effect above; the sticky
+            behaviour itself is plain CSS, independent of Lenis entirely.
+
+            A sticky element only stays stuck for as long as its OWN flex
+            item still has room left in the document flow — scroll past that
+            item's own height and it releases, full stop. The card itself is
+            compact, so without a separate tall "track" behind it, there's
+            barely any runway: it releases almost immediately, leaving a
+            dead gap of plain background before the next card's sticky
+            window even starts, instead of an overlapping "deck" of cards.
+            The fix is the two-layer structure below: a tall, invisible
+            track (`min-height`) gives each slide real scroll distance,
+            while the actual visible card sticks near the top of its own
+            track — exactly the structure the reference site's `.sc` rule
+            uses (`min-height: min(58vh,480px)` doing the same job in one
+            element). The last card has no track, since nothing needs to
+            slide over it once it's reached. */}
+        <div className="relative mt-16 flex flex-col gap-6">
+          {projects.map((project, index) => (
+            <div
               key={project.id}
-              direction="up"
-              delay={0.08 * index}
-              className={cn(isLonelyLastCard && 'lg:col-start-2')}
+              className="relative"
+              style={index === projects.length - 1 ? undefined : { minHeight: '85vh' }}
             >
-              {/* A real <button>, not a plain div with onClick: the custom
-                  cursor's hover-grow state and keyboard activation both key
-                  off interactive elements, and a div matched neither. */}
-              <button
-                type="button"
-                onClick={() => setSelectedProject(project)}
-                className="group flex h-full w-full flex-col justify-between overflow-hidden rounded-3xl border border-stone-200/80 bg-white p-4 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-xl dark:border-emerald-500/20 dark:bg-[#0b2115]"
-              >
-                <div>
-                  {/* Category Pill */}
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[0.6875rem] font-bold ${getTagStyle(
-                        project.category,
-                      )}`}
-                    >
-                      {project.category}
-                    </span>
+            <div
+              ref={(el) => {
+                cardRefs.current[index] = el;
+              }}
+              className="sticky"
+              style={{ top: `calc(7rem + ${index * STACK_OFFSET_PX}px)` }}
+            >
+              <Reveal direction="up" delay={0.06 * index}>
+                {/* A real <button>, not a plain div with onClick: the custom
+                    cursor's hover-grow state and keyboard activation both key
+                    off interactive elements, and a div matched neither.
+                    min-height here is deliberate: each slide needs to read
+                    as its own scene, not a compact list row, or there's far
+                    more bare viewport than card even while the depth-blur
+                    handoff is working correctly underneath it. */}
+                <button
+                  type="button"
+                  onClick={() => setSelectedProject(project)}
+                  className="group flex min-h-[420px] w-full flex-col justify-center gap-6 overflow-hidden rounded-3xl border border-stone-200/80 bg-white p-7 text-left shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 dark:border-emerald-500/20 dark:bg-[#0b2115] sm:min-h-[460px] sm:flex-row sm:items-center sm:gap-10 sm:p-10"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-xs text-stone-400 dark:text-emerald-500/60">
+                        0{index + 1}
+                      </span>
+                      <span
+                        className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[0.6875rem] font-bold ${getTagStyle(
+                          project.category,
+                        )}`}
+                      >
+                        {project.category}
+                      </span>
+                    </div>
+
+                    <h3 className="mt-4 font-display text-2xl font-bold leading-snug text-[#0a1e12] group-hover:text-emerald-700 dark:text-white dark:group-hover:text-emerald-300 sm:text-3xl lg:text-4xl">
+                      {project.title}
+                    </h3>
+
+                    <p className="mt-3 max-w-xl text-sm leading-relaxed text-stone-600 dark:text-emerald-100/70 sm:text-base">
+                      {project.subtitle}
+                    </p>
+
+                    <div className="mt-6 flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+                      <span>View details</span>
+                      <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+                    </div>
                   </div>
 
                   {/* Real artwork where supplied; otherwise a generative
@@ -129,7 +203,7 @@ export function FeaturedProjects(): React.JSX.Element {
                       card depends on a generated image that might bake in
                       text of its own. */}
                   <div
-                    className="relative mt-3.5 flex h-32 items-center justify-center overflow-hidden rounded-2xl border border-stone-200/80 dark:border-emerald-500/30"
+                    className="relative h-48 w-full shrink-0 overflow-hidden rounded-2xl border border-stone-200/80 dark:border-emerald-500/30 sm:h-full sm:w-80"
                     style={
                       project.image
                         ? undefined
@@ -152,27 +226,11 @@ export function FeaturedProjects(): React.JSX.Element {
                       {project.year}
                     </span>
                   </div>
-
-                  {/* Title & Description */}
-                  <h3 className="mt-4 font-display text-sm font-bold leading-snug text-[#0a1e12] group-hover:text-emerald-700 dark:text-white dark:group-hover:text-emerald-300">
-                    {project.title}
-                  </h3>
-
-                  <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-stone-600 dark:text-emerald-100/70">
-                    {project.subtitle}
-                  </p>
-                </div>
-
-                {/* Bottom Circular Arrow Button */}
-                <div className="mt-5 flex items-center justify-end pt-3 border-t border-stone-100 dark:border-emerald-500/15">
-                  <div className="flex size-8 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 transition-all duration-300 group-hover:bg-emerald-500 group-hover:text-slate-950 dark:bg-emerald-950/60 dark:text-emerald-300">
-                    <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
-                  </div>
-                </div>
-              </button>
-            </Reveal>
-            );
-          })}
+                </button>
+              </Reveal>
+            </div>
+            </div>
+          ))}
         </div>
       </div>
 
