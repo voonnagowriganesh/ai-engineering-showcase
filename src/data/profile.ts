@@ -524,7 +524,7 @@ export const projects: readonly Project[] = [
     emphasis: 'feature',
     palette: ['#8b5cf6', '#a855f7'],
     icon: Truck,
-    image: '/images/project-smart-inventory.svg',
+    image: '/images/project-smart-inventory.jpg',
     summary:
       'A logistics backend that manages hubs, inventory batches, vehicles and drivers, with automatic FIFO-based dispatch and vehicle/driver assignment.',
     highlights: [

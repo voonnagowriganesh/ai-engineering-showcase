@@ -5,6 +5,7 @@ import { projects } from '@/data/profile';
 import { useScrollLock } from '@/hooks/useScroll';
 import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/primitives';
+import { cn } from '@/lib/utils';
 import type { Project } from '@/domain/models';
 
 export function FeaturedProjects(): React.JSX.Element {
@@ -78,13 +79,31 @@ export function FeaturedProjects(): React.JSX.Element {
             span was tried here and reverted: it made every card equal width
             at the sm breakpoint but visibly unequal at lg (one card ~2x the
             width of its neighbour), which read as inconsistent rather than
-            intentional. Uniform sizing means the only asymmetry at any
-            breakpoint is a single trailing card alone in the very last row
-            when the count doesn't divide evenly — which every card grid on
-            the web does and isn't a layout bug. */}
+            intentional.
+            When the count doesn't divide evenly by 3, the trailing row has a
+            single card that would otherwise sit left-aligned with two empty
+            cells of bare background beside it — correct per the grid, but it
+            visibly reads as "something's missing" rather than "this is the
+            end of the list". At the 3-column (lg) breakpoint only, that lone
+            last card is shifted into the middle column, so the empty space
+            is split evenly on both sides instead of bunched on one. This is
+            computed from `projects.length`, not hardcoded to 7, so it keeps
+            working if a project is added or removed. Left as-is at the
+            2-column (sm) breakpoint: true centering there would require
+            spanning the item across both columns, which is exactly the kind
+            of per-breakpoint span trick that broke the grid earlier in this
+            same session — the leftover gap is half as wide there anyway, so
+            it's a much smaller visual problem to accept. */}
         <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project, index) => (
-            <Reveal key={project.id} direction="up" delay={0.08 * index}>
+          {projects.map((project, index) => {
+            const isLonelyLastCard = index === projects.length - 1 && projects.length % 3 === 1;
+            return (
+            <Reveal
+              key={project.id}
+              direction="up"
+              delay={0.08 * index}
+              className={cn(isLonelyLastCard && 'lg:col-start-2')}
+            >
               {/* A real <button>, not a plain div with onClick: the custom
                   cursor's hover-grow state and keyboard activation both key
                   off interactive elements, and a div matched neither. */}
@@ -152,7 +171,8 @@ export function FeaturedProjects(): React.JSX.Element {
                 </div>
               </button>
             </Reveal>
-          ))}
+            );
+          })}
         </div>
       </div>
 
