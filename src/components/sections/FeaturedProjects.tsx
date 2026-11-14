@@ -5,7 +5,6 @@ import { projects } from '@/data/profile';
 import { useScrollLock } from '@/hooks/useScroll';
 import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/primitives';
-import { cn } from '@/lib/utils';
 import type { Project } from '@/domain/models';
 
 export function FeaturedProjects(): React.JSX.Element {
@@ -75,25 +74,17 @@ export function FeaturedProjects(): React.JSX.Element {
           </Reveal>
         </div>
 
-        {/* 7 real projects. At the 3-column (lg) breakpoint, two cards are
-            marked `emphasis: 'feature'` and span 2 columns each: 2×2 + 5×1 =
-            9 units, an exact multiple of 3 — three full rows, no gaps.
-            That span is deliberately NOT applied at the 2-column (sm)
-            breakpoint: 9 units over 2 columns doesn't divide evenly, and
-            spanning there produces an orphaned single card with an empty
-            cell beside it in the MIDDLE of the grid (confirmed by testing
-            every breakpoint, not just lg and mobile — the gap this caused
-            is exactly the bug class to avoid). Left plain at sm/mobile, the
-            worst case is one trailing card alone in the very last row,
-            which every card grid on the web does and isn't a layout bug. */}
+        {/* 7 real projects, every card the same size. A two-column "feature"
+            span was tried here and reverted: it made every card equal width
+            at the sm breakpoint but visibly unequal at lg (one card ~2x the
+            width of its neighbour), which read as inconsistent rather than
+            intentional. Uniform sizing means the only asymmetry at any
+            breakpoint is a single trailing card alone in the very last row
+            when the count doesn't divide evenly — which every card grid on
+            the web does and isn't a layout bug. */}
         <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {projects.map((project, index) => (
-            <Reveal
-              key={project.id}
-              direction="up"
-              delay={0.08 * index}
-              className={cn(project.emphasis === 'feature' && 'lg:col-span-2')}
-            >
+            <Reveal key={project.id} direction="up" delay={0.08 * index}>
               {/* A real <button>, not a plain div with onClick: the custom
                   cursor's hover-grow state and keyboard activation both key
                   off interactive elements, and a div matched neither. */}

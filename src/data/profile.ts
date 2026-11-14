@@ -551,7 +551,7 @@ export const projects: readonly Project[] = [
     emphasis: 'standard',
     palette: ['#06b6d4', '#22d3ee'],
     icon: Users,
-    image: '/images/project-community-family.svg',
+    image: '/images/project-community-family.jpg',
     summary:
       'A full-stack registration platform that lets community administrators onboard and manage family records, replacing manual paperwork with a structured, searchable system.',
     highlights: [
@@ -582,7 +582,7 @@ export const projects: readonly Project[] = [
     emphasis: 'standard',
     palette: ['#6366f1', '#818cf8'],
     icon: KeyRound,
-    image: '/images/project-login-auth.svg',
+    image: '/images/project-login-auth.jpg',
     summary:
       'A FastAPI proof-of-concept exploring production-grade authentication rules: encrypted password storage, forced password rotation and account lockout after repeated failed attempts.',
     highlights: [
@@ -604,7 +604,7 @@ export const projects: readonly Project[] = [
     emphasis: 'standard',
     palette: ['#f59e0b', '#fbbf24'],
     icon: Code,
-    image: '/images/project-food-delivery.svg',
+    image: '/images/project-food-delivery.jpg',
     summary:
       'An end-to-end ordering platform built across React, Express and MongoDB.',
     highlights: [
@@ -630,7 +630,7 @@ export const projects: readonly Project[] = [
     emphasis: 'standard',
     palette: ['#ec4899', '#f472b6'],
     icon: Gauge,
-    image: '/images/project-crime-analysis.svg',
+    image: '/images/project-crime-analysis.jpg',
     summary:
       'An academic classification study: preprocessing, feature engineering and KNN modelling, served through a Flask interface.',
     highlights: [
