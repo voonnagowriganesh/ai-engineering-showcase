@@ -1,12 +1,19 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight } from 'lucide-react';
-import { technicalArsenal } from '@/data/profile';
+import { ChevronDown, ChevronRight } from 'lucide-react';
+import { technicalArsenal, skillDomains } from '@/data/profile';
 import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/primitives';
 import { cn } from '@/lib/utils';
 
-type CategoryFilter = 'All' | 'AI & GenAI' | 'Backend' | 'Frontend' | 'Database' | 'DevOps & Cloud';
+type CategoryFilter =
+  | 'All'
+  | 'AI & GenAI'
+  | 'Backend'
+  | 'Frontend'
+  | 'Database'
+  | 'Data Science'
+  | 'DevOps & Cloud';
 
 const CATEGORIES: readonly CategoryFilter[] = [
   'All',
@@ -14,17 +21,19 @@ const CATEGORIES: readonly CategoryFilter[] = [
   'Backend',
   'Frontend',
   'Database',
+  'Data Science',
   'DevOps & Cloud',
 ];
 
 export function TechnicalArsenal(): React.JSX.Element {
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('All');
   const [showAll, setShowAll] = useState(false);
+  const [openDomainId, setOpenDomainId] = useState<string | null>(skillDomains[0]?.id ?? null);
 
   // The "More / Less" control only makes sense for the unfiltered "All" view
   // — once a specific category is chosen there's nothing left to expand, so
   // collapsing never kicks in for a filtered list.
-  const COLLAPSED_COUNT = 10;
+  const COLLAPSED_COUNT = 12;
 
   const filteredItems = useMemo(() => {
     const items =
@@ -140,6 +149,135 @@ export function TechnicalArsenal(): React.JSX.Element {
               ) : null}
             </AnimatePresence>
           </motion.div>
+        </div>
+
+        {/* ── Core Competencies: concept-level skills grouped by domain ──── */}
+        <div className="mt-20">
+          <Reveal direction="down" distance={10}>
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/60 px-3.5 py-1 text-xs font-semibold text-emerald-300 backdrop-blur-sm">
+              <span className="size-1.5 rounded-full bg-emerald-400" />
+              <span>CORE COMPETENCIES</span>
+            </div>
+          </Reveal>
+
+          <Reveal direction="up" delay={0.1}>
+            <h3 className="mt-3 font-display text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+              How the tools come together
+            </h3>
+          </Reveal>
+
+          <Reveal direction="up" delay={0.15}>
+            <p className="mt-2 max-w-2xl text-sm text-slate-300 sm:text-base">
+              Grouped by the capability they serve — from LLM engineering to the deployment
+              infrastructure that keeps it running.
+            </p>
+          </Reveal>
+
+          {/* Single-column accordion — every domain is its own full-width row,
+              so an expanded panel never has to reconcile its height against a
+              sibling of a different length. That per-row independence is what
+              actually removes the gap, not a height hack on top of a layout
+              that still pairs mismatched content. */}
+          <div className="mt-8 flex flex-col gap-3">
+            {skillDomains.map((domain) => {
+              const isOpen = domain.id === openDomainId;
+              return (
+                <Reveal key={domain.id} direction="up" distance={8}>
+                  <motion.div
+                    layout="position"
+                    className="overflow-hidden rounded-2xl border border-emerald-500/20 bg-[#071d12]/90 shadow-[0_4px_20px_rgba(0,0,0,0.3)] backdrop-blur-md"
+                  >
+                    <button
+                      type="button"
+                      aria-expanded={isOpen}
+                      aria-controls={`competency-panel-${domain.id}`}
+                      id={`competency-tab-${domain.id}`}
+                      onClick={() => setOpenDomainId(isOpen ? null : domain.id)}
+                      className="flex w-full items-center gap-4 px-5 py-4 text-left transition-colors duration-300 hover:bg-emerald-950/40 sm:px-7"
+                    >
+                      <span
+                        className={cn(
+                          'grid size-10 shrink-0 place-items-center rounded-xl border transition-colors duration-300',
+                          isOpen
+                            ? 'border-emerald-400/40 bg-emerald-500/15 text-emerald-300'
+                            : 'border-emerald-500/15 bg-emerald-950/60 text-slate-400',
+                        )}
+                      >
+                        <Icon icon={domain.icon} size={18} />
+                      </span>
+
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-sm font-bold text-white sm:text-base">
+                          {domain.title}
+                        </span>
+                        <span className="mt-0.5 hidden text-xs leading-relaxed text-slate-400 sm:block">
+                          {domain.blurb}
+                        </span>
+                      </span>
+
+                      <span className="hidden shrink-0 font-mono text-2xs text-emerald-500/70 sm:block">
+                        {domain.skills.length} skills
+                      </span>
+
+                      <ChevronDown
+                        size={18}
+                        className={cn(
+                          'shrink-0 text-emerald-400/70 transition-transform duration-300',
+                          isOpen && 'rotate-180',
+                        )}
+                      />
+                    </button>
+
+                    <AnimatePresence initial={false}>
+                      {isOpen ? (
+                        <motion.div
+                          key="content"
+                          id={`competency-panel-${domain.id}`}
+                          role="region"
+                          aria-labelledby={`competency-tab-${domain.id}`}
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                        >
+                          <p className="px-5 text-xs leading-relaxed text-slate-400 sm:hidden">
+                            {domain.blurb}
+                          </p>
+                          <ul className="flex flex-wrap gap-2 px-5 pt-4 pb-5 sm:px-7">
+                            {domain.skills.map((skill, index) => (
+                              <motion.li
+                                key={skill.name}
+                                initial={{ opacity: 0, scale: 0.92, y: 6 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                transition={{
+                                  delay: index * 0.025,
+                                  duration: 0.25,
+                                  ease: [0.16, 1, 0.3, 1],
+                                }}
+                              >
+                                <span className="group/skill flex items-center gap-2 rounded-lg border border-emerald-500/15 bg-emerald-950/40 px-3.5 py-2 transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-400/40 hover:bg-emerald-900/30">
+                                  {skill.icon ? (
+                                    <Icon
+                                      icon={skill.icon}
+                                      size={14}
+                                      className="text-emerald-400/80 transition-colors duration-300 group-hover/skill:text-emerald-300"
+                                    />
+                                  ) : null}
+                                  <span className="text-xs font-medium whitespace-nowrap text-slate-200 transition-colors duration-300 group-hover/skill:text-white">
+                                    {skill.name}
+                                  </span>
+                                </span>
+                              </motion.li>
+                            ))}
+                          </ul>
+                        </motion.div>
+                      ) : null}
+                    </AnimatePresence>
+                  </motion.div>
+                </Reveal>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
