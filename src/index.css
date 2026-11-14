@@ -126,6 +126,9 @@
   --tone-amber-1: #d97706;
   --tone-amber-2: #10b981;
   --tone-amber-3: #22c55e;
+  --tone-violet-1: #7c3aed;
+  --tone-violet-2: #8b5cf6;
+  --tone-violet-3: #a78bfa;
 
   /* Ambient-field intensities consumed by the WebGL hero and the CSS glows */
   --field-opacity: 0.75;
@@ -186,6 +189,12 @@
   --tone-amber-1: #ffb020;
   --tone-amber-2: #ff5c8a;
   --tone-amber-3: #c084fc;
+  /* Used only by `.tone-violet`, applied to the Hero section's premium
+     accent re-skin — deliberately NOT folded into --c-accent itself, so it
+     doesn't ripple into every other hardcoded-emerald component site-wide. */
+  --tone-violet-1: #a78bfa;
+  --tone-violet-2: #c4b5fd;
+  --tone-violet-3: #fbbf24;
 
   --field-opacity: 1;
   --grain-opacity: 0.05;
@@ -433,6 +442,11 @@
     --color-accent: var(--tone-amber-1);
     --color-accent-2: var(--tone-amber-2);
     --color-accent-3: var(--tone-amber-3);
+  }
+  .tone-violet {
+    --color-accent: var(--tone-violet-1);
+    --color-accent-2: var(--tone-violet-2);
+    --color-accent-3: var(--tone-violet-3);
   }
 
   .text-stroke {

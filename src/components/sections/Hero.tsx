@@ -1,23 +1,59 @@
-import { Suspense, lazy } from 'react';
-import { motion } from 'motion/react';
+import { Suspense, lazy, useRef } from 'react';
+import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { ArrowRight, Download, Sparkles, Brain, Layers, Bot, Code } from 'lucide-react';
 import { heroFeaturePills, identity, socials } from '@/data/profile';
 import { useScrollTo } from '@/hooks/useScroll';
+import { useReducedMotion } from '@/hooks/useInteractions';
 import { NeuralFieldCanvas } from '@/components/canvas/NeuralFieldCanvas';
 import { Reveal } from '@/components/ui/Reveal';
+import { SplitText } from '@/components/ui/SplitText';
 import { Icon } from '@/components/ui/primitives';
 
 const AuroraField = lazy(() =>
   import('@/components/canvas/AuroraField').then((module) => ({ default: module.AuroraField })),
 );
 
+/** Max tilt in degrees for the portrait's mouse-driven 3D effect. */
+const TILT_RANGE = 14;
+
 export function Hero(): React.JSX.Element {
   const scrollTo = useScrollTo();
+  const reduceMotion = useReducedMotion();
+  const tiltRef = useRef<HTMLDivElement>(null);
+
+  // Raw pointer position (-0.5..0.5 of the card's own size), smoothed through
+  // a spring so the tilt settles rather than snapping on every pixel of
+  // mouse movement.
+  const pointerX = useMotionValue(0);
+  const pointerY = useMotionValue(0);
+  const springX = useSpring(pointerX, { stiffness: 150, damping: 20, mass: 0.5 });
+  const springY = useSpring(pointerY, { stiffness: 150, damping: 20, mass: 0.5 });
+  const rotateX = useTransform(springY, [-0.5, 0.5], [TILT_RANGE, -TILT_RANGE]);
+  const rotateY = useTransform(springX, [-0.5, 0.5], [-TILT_RANGE, TILT_RANGE]);
+  // A soft highlight that follows the pointer, like light catching glass.
+  const glowX = useTransform(springX, [-0.5, 0.5], ['20%', '80%']);
+  const glowY = useTransform(springY, [-0.5, 0.5], ['20%', '80%']);
+  const glowBackground = useTransform(
+    [glowX, glowY],
+    ([x, y]) => `radial-gradient(circle at ${x} ${y}, rgba(255,255,255,0.8), transparent 55%)`,
+  );
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>): void => {
+    if (reduceMotion || !tiltRef.current) return;
+    const rect = tiltRef.current.getBoundingClientRect();
+    pointerX.set((event.clientX - rect.left) / rect.width - 0.5);
+    pointerY.set((event.clientY - rect.top) / rect.height - 0.5);
+  };
+
+  const handlePointerLeave = (): void => {
+    pointerX.set(0);
+    pointerY.set(0);
+  };
 
   return (
     <section
       id="hero"
-      className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-gradient-to-b from-[#04120a] via-[#071f13] to-[#05160d] pt-28 pb-16 text-white"
+      className="tone-violet relative flex min-h-screen flex-col justify-center overflow-hidden bg-gradient-to-b from-[#04120a] via-[#071f13] to-[#05160d] pt-28 pb-16 text-white"
     >
       {/* ── Visual Ambient Canvas Backdrops ─────────────────────────────── */}
       <Suspense fallback={null}>
@@ -28,11 +64,11 @@ export function Hero(): React.JSX.Element {
       {/* Bioluminescent emerald ambient glow spots */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute top-1/4 -left-20 size-[32rem] rounded-full bg-emerald-500/10 blur-[120px]"
+        className="pointer-events-none absolute top-1/4 -left-20 size-[32rem] rounded-full bg-violet-500/10 blur-[120px]"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute top-1/3 -right-20 size-[36rem] rounded-full bg-emerald-400/15 blur-[140px]"
+        className="pointer-events-none absolute top-1/3 -right-20 size-[36rem] rounded-full bg-violet-400/15 blur-[140px]"
       />
 
       <div className="relative mx-auto w-full max-w-[84rem] px-5 sm:px-8">
@@ -41,11 +77,11 @@ export function Hero(): React.JSX.Element {
           <div className="lg:col-span-7">
             {/* Pill: AI Developer @ Techgene Solutions */}
             <Reveal direction="down" distance={14}>
-              <div className="inline-flex items-center gap-2.5 rounded-full border border-emerald-500/30 bg-emerald-950/60 px-4 py-1.5 shadow-[0_0_20px_rgba(16,185,129,0.15)] backdrop-blur-md">
-                <span className="flex size-5 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
+              <div className="inline-flex items-center gap-2.5 rounded-full border border-violet-500/30 bg-violet-950/60 px-4 py-1.5 shadow-[0_0_20px_rgba(139,92,246,0.15)] backdrop-blur-md">
+                <span className="flex size-5 items-center justify-center rounded-full bg-violet-500/20 text-violet-400">
                   <Sparkles size={12} className="animate-pulse" />
                 </span>
-                <span className="text-xs font-semibold tracking-wide text-emerald-300">
+                <span className="text-xs font-semibold tracking-wide text-violet-300">
                   AI Developer @ Techgene Solutions
                 </span>
               </div>
@@ -58,12 +94,17 @@ export function Hero(): React.JSX.Element {
                   <span className="block text-2xl font-light text-slate-300 sm:text-3xl">
                     Hi, I'm
                   </span>
-                  <span className="mt-1 block text-4xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl">
-                    <span className="bg-gradient-to-r from-white via-emerald-200 to-emerald-400 bg-clip-text text-transparent drop-shadow-[0_0_35px_rgba(52,211,153,0.35)]">
-                      {identity.fullName}
-                    </span>
-                  </span>
-                  <span className="mt-2 block text-2xl font-bold text-emerald-400 sm:text-3xl lg:text-4xl">
+                  <SplitText
+                    as="span"
+                    text={identity.fullName}
+                    by="word"
+                    animateOnMount
+                    delay={0.15}
+                    stagger={0.08}
+                    className="mt-1 block text-4xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl"
+                    unitClassName="text-gradient drop-shadow-[0_0_35px_rgba(167,139,250,0.35)]"
+                  />
+                  <span className="mt-2 block text-2xl font-bold text-violet-400 sm:text-3xl lg:text-4xl">
                     Building Intelligent Products with AI.
                   </span>
                 </h1>
@@ -82,7 +123,7 @@ export function Hero(): React.JSX.Element {
                 <button
                   type="button"
                   onClick={() => scrollTo('projects', -20)}
-                  className="group inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-emerald-400 via-emerald-300 to-green-400 px-7 py-3.5 text-sm font-bold text-[#031c0e] shadow-[0_0_25px_rgba(52,211,153,0.4)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_35px_rgba(52,211,153,0.6)]"
+                  className="group inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-violet-400 via-violet-300 to-amber-400 px-7 py-3.5 text-sm font-bold text-[#1e1033] shadow-[0_0_25px_rgba(167,139,250,0.4)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_35px_rgba(167,139,250,0.6)]"
                 >
                   <span>Explore My Work</span>
                   <ArrowRight
@@ -94,7 +135,7 @@ export function Hero(): React.JSX.Element {
                 <a
                   href={identity.resumeUrl}
                   download={identity.resumeFileName}
-                  className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-950/40 px-6 py-3.5 text-sm font-semibold text-emerald-300 backdrop-blur-sm transition-all duration-300 hover:border-emerald-300 hover:bg-emerald-500/20 hover:text-white"
+                  className="inline-flex items-center gap-2 rounded-full border border-violet-500/40 bg-violet-950/40 px-6 py-3.5 text-sm font-semibold text-violet-300 backdrop-blur-sm transition-all duration-300 hover:border-violet-300 hover:bg-violet-500/20 hover:text-white"
                 >
                   <Download size={16} />
                   <span>Download Resume</span>
@@ -112,7 +153,7 @@ export function Hero(): React.JSX.Element {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={social.label}
-                    className="flex size-10 items-center justify-center rounded-full border border-emerald-500/25 bg-emerald-950/50 text-slate-300 shadow-[0_0_12px_rgba(16,185,129,0.1)] transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300"
+                    className="flex size-10 items-center justify-center rounded-full border border-violet-500/25 bg-violet-950/50 text-slate-300 shadow-[0_0_12px_rgba(139,92,246,0.1)] transition-all duration-300 hover:-translate-y-0.5 hover:border-violet-400 hover:bg-violet-500/20 hover:text-violet-300"
                   >
                     <Icon icon={social.icon} size={16} />
                   </a>
@@ -122,13 +163,13 @@ export function Hero(): React.JSX.Element {
 
             {/* 3 Feature Badges below buttons */}
             <Reveal direction="up" delay={0.5}>
-              <div className="mt-8 flex flex-wrap items-center gap-3 pt-6 border-t border-emerald-500/20">
+              <div className="mt-8 flex flex-wrap items-center gap-3 pt-6 border-t border-violet-500/20">
                 {heroFeaturePills.map((badge) => (
                   <div
                     key={badge.title}
-                    className="flex items-center gap-2 rounded-full border border-emerald-500/20 bg-[#061e12]/80 px-3.5 py-1.5 text-xs font-medium text-emerald-200/90 shadow-[0_0_10px_rgba(16,185,129,0.08)] backdrop-blur-sm"
+                    className="flex items-center gap-2 rounded-full border border-violet-500/20 bg-[#061e12]/80 px-3.5 py-1.5 text-xs font-medium text-violet-200/90 shadow-[0_0_10px_rgba(139,92,246,0.08)] backdrop-blur-sm"
                   >
-                    <Icon icon={badge.icon} size={14} className="text-emerald-400" />
+                    <Icon icon={badge.icon} size={14} className="text-violet-400" />
                     <span>{badge.title}</span>
                   </div>
                 ))}
@@ -141,13 +182,39 @@ export function Hero(): React.JSX.Element {
             <Reveal direction="left" delay={0.2}>
               {/* w-fit, not max-w-lg: the wrapper must shrink to the photo's
                   actual width, or the floating badges below (anchored to
-                  this wrapper's edge, not the photo's) drift away from it. */}
-              <div className="relative mx-auto flex w-fit items-center justify-center">
+                  this wrapper's edge, not the photo's) drift away from it.
+                  The tilt transform (rotateX/rotateY) is applied HERE, on the
+                  wrapper that contains the badges too, not just the portrait
+                  box — they're absolutely positioned against this same
+                  element, so tilting it keeps them visually attached instead
+                  of drifting off the portrait's edge as the user warned about. */}
+              <motion.div
+                ref={tiltRef}
+                onPointerMove={handlePointerMove}
+                onPointerLeave={handlePointerLeave}
+                style={{
+                  rotateX: reduceMotion ? 0 : rotateX,
+                  rotateY: reduceMotion ? 0 : rotateY,
+                  transformPerspective: 1000,
+                }}
+                className="relative mx-auto flex w-fit items-center justify-center"
+              >
                 {/* Outer Glow Ring */}
                 <div
                   aria-hidden="true"
-                  className="absolute inset-0 -m-6 rounded-full bg-gradient-to-tr from-emerald-500/20 via-emerald-400/30 to-green-300/10 blur-2xl"
+                  className="absolute inset-0 -m-6 rounded-full bg-gradient-to-tr from-violet-500/20 via-violet-400/30 to-amber-300/10 blur-2xl"
                 />
+
+                {/* Pointer-following glass highlight — only rendered once
+                    motion is confirmed enabled, so it never paints as a
+                    static off-center blob for reduced-motion visitors. */}
+                {!reduceMotion ? (
+                  <motion.div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 z-10 rounded-3xl opacity-60 mix-blend-soft-light"
+                    style={{ background: glowBackground }}
+                  />
+                ) : null}
 
                 {/* Portrait — the user's own composite (face + laptop + AI
                     brain graphic), supplied to replace the plain passport
@@ -157,7 +224,7 @@ export function Hero(): React.JSX.Element {
                     a resized, compressed JPEG (142KB) rather than the
                     original 2MB PNG — the preloader's image-wait fix only
                     helps if the one eager image left still loads fast. */}
-                <div className="relative aspect-[11/10] w-full max-w-[460px] overflow-hidden rounded-3xl border border-emerald-500/30 bg-gradient-to-b from-emerald-950/60 to-[#04140b] p-2 shadow-[0_0_50px_rgba(16,185,129,0.25)] backdrop-blur-md">
+                <div className="relative aspect-[11/10] w-full max-w-[460px] overflow-hidden rounded-3xl border border-violet-500/30 bg-gradient-to-b from-violet-950/60 to-[#04140b] p-2 shadow-[0_0_50px_rgba(139,92,246,0.25)] backdrop-blur-md">
                   <img
                     src="/images/hero-portrait.jpg"
                     alt={`${identity.fullName} — AI Developer`}
@@ -173,39 +240,39 @@ export function Hero(): React.JSX.Element {
                 <motion.div
                   animate={{ y: [0, -8, 0] }}
                   transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                  className="absolute -top-3 -right-2 sm:-right-4 flex items-center gap-2 rounded-2xl border border-emerald-400/40 bg-[#051f13]/90 px-3.5 py-2 shadow-[0_8px_25px_rgba(0,0,0,0.5)] backdrop-blur-md"
+                  className="absolute -top-3 -right-2 sm:-right-4 flex items-center gap-2 rounded-2xl border border-violet-400/40 bg-[#051f13]/90 px-3.5 py-2 shadow-[0_8px_25px_rgba(0,0,0,0.5)] backdrop-blur-md"
                 >
-                  <Brain size={16} className="text-emerald-400" />
+                  <Brain size={16} className="text-violet-400" />
                   <span className="text-xs font-bold text-white">LLMs</span>
                 </motion.div>
 
                 <motion.div
                   animate={{ y: [0, 8, 0] }}
                   transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-                  className="absolute top-20 -right-4 sm:-right-6 flex items-center gap-2 rounded-2xl border border-emerald-400/40 bg-[#051f13]/90 px-3.5 py-2 shadow-[0_8px_25px_rgba(0,0,0,0.5)] backdrop-blur-md"
+                  className="absolute top-20 -right-4 sm:-right-6 flex items-center gap-2 rounded-2xl border border-violet-400/40 bg-[#051f13]/90 px-3.5 py-2 shadow-[0_8px_25px_rgba(0,0,0,0.5)] backdrop-blur-md"
                 >
-                  <Layers size={16} className="text-emerald-400" />
+                  <Layers size={16} className="text-violet-400" />
                   <span className="text-xs font-bold text-white">RAG</span>
                 </motion.div>
 
                 <motion.div
                   animate={{ y: [0, -7, 0] }}
                   transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                  className="absolute top-44 -right-2 sm:-right-4 flex items-center gap-2 rounded-2xl border border-emerald-400/40 bg-[#051f13]/90 px-3.5 py-2 shadow-[0_8px_25px_rgba(0,0,0,0.5)] backdrop-blur-md"
+                  className="absolute top-44 -right-2 sm:-right-4 flex items-center gap-2 rounded-2xl border border-violet-400/40 bg-[#051f13]/90 px-3.5 py-2 shadow-[0_8px_25px_rgba(0,0,0,0.5)] backdrop-blur-md"
                 >
-                  <Bot size={16} className="text-emerald-400" />
+                  <Bot size={16} className="text-violet-400" />
                   <span className="text-xs font-bold text-white">AI Agents</span>
                 </motion.div>
 
                 <motion.div
                   animate={{ y: [0, 6, 0] }}
                   transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
-                  className="absolute bottom-6 -right-2 sm:-right-4 flex items-center gap-2 rounded-2xl border border-emerald-400/40 bg-[#051f13]/90 px-3.5 py-2 shadow-[0_8px_25px_rgba(0,0,0,0.5)] backdrop-blur-md"
+                  className="absolute bottom-6 -right-2 sm:-right-4 flex items-center gap-2 rounded-2xl border border-violet-400/40 bg-[#051f13]/90 px-3.5 py-2 shadow-[0_8px_25px_rgba(0,0,0,0.5)] backdrop-blur-md"
                 >
-                  <Code size={16} className="text-emerald-400" />
+                  <Code size={16} className="text-violet-400" />
                   <span className="text-xs font-bold text-white">Product Development</span>
                 </motion.div>
-              </div>
+              </motion.div>
             </Reveal>
           </div>
         </div>
