@@ -83,7 +83,14 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps): Rea
                 </kbd>
               </div>
 
-              <CommandPrimitive.List className="flex-1 overflow-y-auto overscroll-contain p-2">
+              {/* Same latent bug as the About/Project modals: Lenis
+                  preventDefaults every wheel event while locked unless the
+                  target has this attribute, which would otherwise make a
+                  long result list unscrollable while the palette is open. */}
+              <CommandPrimitive.List
+                data-lenis-prevent
+                className="flex-1 overflow-y-auto overscroll-contain p-2"
+              >
                 <CommandPrimitive.Empty className="px-4 py-10 text-center text-sm text-ink-subtle">
                   Nothing matched that.
                 </CommandPrimitive.Empty>

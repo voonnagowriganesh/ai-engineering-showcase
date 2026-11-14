@@ -75,17 +75,24 @@ export function FeaturedProjects(): React.JSX.Element {
           </Reveal>
         </div>
 
-        {/* 7 real projects, 3 columns. Two are marked `emphasis: 'feature'`
-            and span 2 columns each: 2×2 + 5×1 = 9 grid units, an exact
-            multiple of 3 — three full rows, no row left with an orphaned
-            card and an empty cell beside it. */}
+        {/* 7 real projects. At the 3-column (lg) breakpoint, two cards are
+            marked `emphasis: 'feature'` and span 2 columns each: 2×2 + 5×1 =
+            9 units, an exact multiple of 3 — three full rows, no gaps.
+            That span is deliberately NOT applied at the 2-column (sm)
+            breakpoint: 9 units over 2 columns doesn't divide evenly, and
+            spanning there produces an orphaned single card with an empty
+            cell beside it in the MIDDLE of the grid (confirmed by testing
+            every breakpoint, not just lg and mobile — the gap this caused
+            is exactly the bug class to avoid). Left plain at sm/mobile, the
+            worst case is one trailing card alone in the very last row,
+            which every card grid on the web does and isn't a layout bug. */}
         <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {projects.map((project, index) => (
             <Reveal
               key={project.id}
               direction="up"
               delay={0.08 * index}
-              className={cn(project.emphasis === 'feature' && 'sm:col-span-2 lg:col-span-2')}
+              className={cn(project.emphasis === 'feature' && 'lg:col-span-2')}
             >
               {/* A real <button>, not a plain div with onClick: the custom
                   cursor's hover-grow state and keyboard activation both key
@@ -175,6 +182,11 @@ export function FeaturedProjects(): React.JSX.Element {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              // Lenis's own wheel handler calls preventDefault() on every
+              // scroll while stopped unless the target carries this
+              // attribute — without it, locking the page for the modal
+              // also silently blocks the modal's own overflow-y-auto.
+              data-lenis-prevent
               className="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-emerald-500/30 bg-[#071910] p-6 text-white shadow-2xl sm:p-8"
             >
               <div className="flex items-center justify-between pb-4 border-b border-emerald-500/20">

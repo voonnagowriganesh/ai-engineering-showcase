@@ -11,10 +11,17 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { education, experiences, identity, strengths } from '@/data/profile';
+import { useScrollLock } from '@/hooks/useScroll';
 import { Reveal } from '@/components/ui/Reveal';
 
 export function AboutAndExperience(): React.JSX.Element {
   const [modalOpen, setModalOpen] = useState(false);
+
+  // Same fix as the project modal: this site scrolls via Lenis, which runs
+  // its own rAF loop independent of CSS overflow, so plain `overflow-y-auto`
+  // on the modal isn't enough once its content (now 3 education entries
+  // instead of 1) outgrows max-h-[85vh] and actually needs to scroll.
+  useScrollLock(modalOpen);
 
   return (
     <section className="relative overflow-hidden bg-[#f7f6f0] py-20 text-[#071910] transition-colors dark:bg-[#07180f] dark:text-white">
@@ -202,6 +209,10 @@ export function AboutAndExperience(): React.JSX.Element {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              // See FeaturedProjects.tsx's modal for why this is required:
+              // without it, Lenis blocks the modal's own scroll too while
+              // the page behind it is locked.
+              data-lenis-prevent
               className="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-emerald-500/30 bg-[#071910] p-6 text-white shadow-2xl sm:p-8"
             >
               <div className="flex items-center justify-between pb-4 border-b border-emerald-500/20">
