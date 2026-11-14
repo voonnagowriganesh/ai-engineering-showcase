@@ -102,32 +102,32 @@ export function About(): React.JSX.Element {
 
                 <div className="min-w-0 flex-1">
                   <Eyebrow>Education</Eyebrow>
-                  <h3 className="mt-2 text-lg font-semibold text-ink">{education.degree}</h3>
+                  <h3 className="mt-2 text-lg font-semibold text-ink">{education[0]?.degree}</h3>
                   <p className="mt-1 text-[0.9375rem] text-ink-muted">
-                    {education.specialisation}
+                    {education[0]?.specialisation}
                   </p>
 
                   <dl className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-2xs tracking-wide text-ink-subtle">
                     <div className="flex items-center gap-1.5">
                       <dt className="sr-only">Institution</dt>
-                      <dd>{education.institution}</dd>
+                      <dd>{education[0]?.institution}</dd>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <dt className="sr-only">University</dt>
-                      <dd>{education.university}</dd>
+                      <dd>{education[0]?.university}</dd>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <dt className="sr-only">Location</dt>
                       <dd className="flex items-center gap-1.5">
                         <MapPin size={11} />
-                        {education.location}
+                        {education[0]?.location}
                       </dd>
                     </div>
                   </dl>
                 </div>
 
                 <span className="shrink-0 rounded-full border border-line bg-canvas px-3 py-1 font-mono text-2xs text-ink-muted">
-                  {education.period}
+                  {education[0]?.period}
                 </span>
               </div>
             </SpotlightCard>

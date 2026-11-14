@@ -1,13 +1,22 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { ArrowRight, CheckCircle2, X } from 'lucide-react';
+import { ArrowRight, CheckCircle2, ExternalLink, X } from 'lucide-react';
 import { projects } from '@/data/profile';
+import { useScrollLock } from '@/hooks/useScroll';
 import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/primitives';
+import { cn } from '@/lib/utils';
 import type { Project } from '@/domain/models';
 
 export function FeaturedProjects(): React.JSX.Element {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+  // Plain `overflow: hidden` on body isn't enough — this site drives scroll
+  // through Lenis (see ScrollService), which scrolls the page via its own
+  // rAF loop regardless of CSS overflow. useScrollLock calls into the same
+  // service the command palette already uses, so Lenis itself is paused
+  // while the modal is open, not just the body's native overflow.
+  useScrollLock(selectedProject !== null);
 
   const getTagStyle = (category: string) => {
     switch (category) {
@@ -66,12 +75,18 @@ export function FeaturedProjects(): React.JSX.Element {
           </Reveal>
         </div>
 
-        {/* 5 Project Cards Horizontal/Grid */}
-        {/* 6 real projects, 3 columns — divides evenly into two full rows
-            rather than leaving an odd card alone on its own row. */}
+        {/* 7 real projects, 3 columns. Two are marked `emphasis: 'feature'`
+            and span 2 columns each: 2×2 + 5×1 = 9 grid units, an exact
+            multiple of 3 — three full rows, no row left with an orphaned
+            card and an empty cell beside it. */}
         <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.slice(0, 6).map((project, index) => (
-            <Reveal key={project.id} direction="up" delay={0.08 * index}>
+          {projects.map((project, index) => (
+            <Reveal
+              key={project.id}
+              direction="up"
+              delay={0.08 * index}
+              className={cn(project.emphasis === 'feature' && 'sm:col-span-2 lg:col-span-2')}
+            >
               {/* A real <button>, not a plain div with onClick: the custom
                   cursor's hover-grow state and keyboard activation both key
                   off interactive elements, and a div matched neither. */}
@@ -197,6 +212,24 @@ export function FeaturedProjects(): React.JSX.Element {
                 <p className="mt-2 text-sm leading-relaxed text-slate-300">
                   {selectedProject.summary}
                 </p>
+
+                {/* Links */}
+                {selectedProject.links?.length ? (
+                  <div className="mt-4 flex flex-wrap gap-2.5">
+                    {selectedProject.links.map((link) => (
+                      <a
+                        key={link.href}
+                        href={link.href}
+                        target={link.external ? '_blank' : undefined}
+                        rel={link.external ? 'noopener noreferrer' : undefined}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-950/50 px-3.5 py-1.5 text-xs font-semibold text-emerald-300 transition-colors hover:border-emerald-400 hover:bg-emerald-500/15 hover:text-white"
+                      >
+                        <span>{link.label}</span>
+                        <ExternalLink size={12} />
+                      </a>
+                    ))}
+                  </div>
+                ) : null}
 
                 {/* Metrics */}
                 {selectedProject.metrics?.length ? (

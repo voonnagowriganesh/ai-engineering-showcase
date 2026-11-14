@@ -33,9 +33,12 @@ import {
   Search,
   Server,
   ShieldCheck,
+  KeyRound,
   Smartphone,
   Sparkles,
   Target,
+  Truck,
+  Users,
   Workflow,
   Zap,
 } from 'lucide-react';
@@ -482,6 +485,7 @@ export const projects: readonly Project[] = [
       { value: '+35%', label: 'Contextual Accuracy' },
       { value: '+40%', label: 'Processing Efficiency' },
     ],
+    links: [{ label: 'View on GitHub', href: 'https://github.com/voonnagowriganesh/voice-agent', external: true }],
   },
   {
     id: 'ai-resume-parsing-system',
@@ -507,25 +511,86 @@ export const projects: readonly Project[] = [
       { value: '+60%', label: 'Extraction Accuracy' },
       { value: '+35%', label: 'Processing Efficiency' },
     ],
+    links: [
+      { label: 'View on GitHub', href: 'https://github.com/gowriganesh-voonna/Resume_Parser', external: true },
+    ],
   },
   {
-    id: 'agentic-workflow-application',
-    title: 'Agentic AI Workflow Application',
-    subtitle: 'Planner-driven agent with live web retrieval and typed state.',
-    category: 'Agentic AI',
+    id: 'smart-inventory-dispatch',
+    title: 'Smart Inventory & Dispatch Management',
+    subtitle: 'Real-time inventory, hub and fleet management with automated dispatch logic.',
+    category: 'Automation',
+    year: '2025',
+    emphasis: 'feature',
+    palette: ['#8b5cf6', '#a855f7'],
+    icon: Truck,
+    summary:
+      'A logistics backend that manages hubs, inventory batches, vehicles and drivers, with automatic FIFO-based dispatch and vehicle/driver assignment.',
+    highlights: [
+      'FastAPI and MongoDB Atlas backend via the async Motor driver, across hub, inventory, driver and vehicle management modules',
+      'FIFO-based dispatch logic with automatic low-stock and expiring-batch alerts',
+      'Automatic vehicle and driver assignment, including age-based driver retirement rules',
+      'Dockerised backend with a dependency-free HTML, CSS and JavaScript front end',
+    ],
+    stack: ['FastAPI', 'MongoDB', 'Motor', 'Pydantic', 'Docker', 'HTML5', 'CSS3', 'JavaScript'],
+    links: [
+      {
+        label: 'View on GitHub',
+        href: 'https://github.com/gowriganesh-voonna/Agentic_AI/tree/main/smart-inventory',
+        external: true,
+      },
+    ],
+  },
+  {
+    id: 'community-family-registration',
+    title: 'Community Family Registration System',
+    subtitle: 'Scalable registration and management platform for community family records.',
+    category: 'Full-Stack',
     year: '2025',
     emphasis: 'standard',
-    palette: ['#8b5cf6', '#a855f7'],
-    icon: Workflow,
+    palette: ['#06b6d4', '#22d3ee'],
+    icon: Users,
     summary:
-      'A planner agent that decomposes a request, routes conditionally through tools including live search, and composes a grounded answer.',
+      'A full-stack registration platform that lets community administrators onboard and manage family records, replacing manual paperwork with a structured, searchable system.',
     highlights: [
-      'Planner-based workflow execution with conditional routing in LangGraph',
-      'External tool integration via the Tavily search API',
-      'Typed state management across multi-step runs',
-      'React front end over a FastAPI orchestration layer',
+      'React front end with JWT-authenticated access control for administrators',
+      'FastAPI backend with PostgreSQL for structured family and member records',
+      'Built and iterated as an ongoing production system (December 2025 – present)',
     ],
-    stack: ['Python', 'FastAPI', 'LangGraph', 'Gemini', 'Tavily', 'React'],
+    stack: ['React', 'FastAPI', 'PostgreSQL', 'JWT', 'HTML5', 'CSS3', 'JavaScript'],
+    links: [
+      {
+        label: 'View on GitHub',
+        href: 'https://github.com/voonnagowriganesh/family-community-registration',
+        external: true,
+      },
+      {
+        label: 'Frontend Repo',
+        href: 'https://github.com/voonnagowriganesh/family-community-registration-frontend',
+        external: true,
+      },
+    ],
+  },
+  {
+    id: 'login-auth-poc',
+    title: 'Login Authentication & Authorization POC',
+    subtitle: 'Secure authentication proof-of-concept with encrypted passwords and policy-driven rules.',
+    category: 'Full-Stack',
+    year: '2025',
+    emphasis: 'standard',
+    palette: ['#6366f1', '#818cf8'],
+    icon: KeyRound,
+    summary:
+      'A FastAPI proof-of-concept exploring production-grade authentication rules: encrypted password storage, forced password rotation and account lockout after repeated failed attempts.',
+    highlights: [
+      'JWT-based login and registration with encrypted password storage and no password reuse',
+      'Forced monthly password rotation and automatic 24-hour account lockout after 3 failed attempts',
+      'Email/phone-based registration with duplicate-account prevention, tested via a Postman collection',
+    ],
+    stack: ['Python', 'FastAPI', 'Pydantic', 'JWT', 'OAuth2'],
+    links: [
+      { label: 'View on GitHub', href: 'https://github.com/voonnagowriganesh/User_Auth', external: true },
+    ],
   },
   {
     id: 'food-delivery-app',
@@ -544,6 +609,13 @@ export const projects: readonly Project[] = [
       'MongoDB document modelling for menus and orders',
     ],
     stack: ['React', 'Node.js', 'Express', 'MongoDB'],
+    links: [
+      {
+        label: 'View on GitHub',
+        href: 'https://github.com/voonnagowriganesh/Food_Delivery_Web_Application',
+        external: true,
+      },
+    ],
   },
   {
     id: 'crime-prediction',
@@ -561,26 +633,20 @@ export const projects: readonly Project[] = [
       'Data preprocessing, feature engineering and evaluation pipeline',
       'Flask application exposing predictions',
     ],
-    stack: ['Python', 'Flask', 'Pandas', 'NumPy', 'Scikit-learn'],
+    stack: ['Python', 'Flask', 'Pandas', 'NumPy', 'Scikit-learn', 'Matplotlib'],
     metrics: [{ value: '~89%', label: 'Model Accuracy' }],
-  },
-  {
-    id: 'stress-detection',
-    title: 'Real-Time Stress Detection',
-    subtitle: 'Webcam-based facial signal classification.',
-    category: 'Computer Vision',
-    year: '2023',
-    emphasis: 'standard',
-    palette: ['#a855f7', '#ec4899'],
-    icon: Atom,
-    summary:
-      'A live OpenCV pipeline that reads facial signals from a webcam stream and classifies stress indicators frame by frame.',
-    highlights: [
-      'Real-time frame capture and preprocessing with OpenCV',
-      'Feature extraction feeding a lightweight classifier',
-      'Continuous on-screen inference output',
+    links: [
+      {
+        label: 'View on GitHub',
+        href: 'https://github.com/voonnagowriganesh/Crime-Data-Analyisis-using-Machine-Learning',
+        external: true,
+      },
+      {
+        label: 'Read the Publication',
+        href: 'https://voonna-gowriganesh.lovable.app/publications/crime-analysis-journal.pdf',
+        external: true,
+      },
     ],
-    stack: ['Python', 'OpenCV', 'Machine Learning'],
   },
 ];
 
@@ -818,14 +884,30 @@ export const services: readonly Service[] = [
    EDUCATION & STRENGTHS
    ══════════════════════════════════════════════════════════════════════════ */
 
-export const education: Education = {
-  degree: 'Bachelor of Technology',
-  specialisation: 'Computer Science & Engineering — Artificial Intelligence and Machine Learning',
-  institution: 'S.R.K Institute of Technology',
-  university: 'JNTU Kakinada',
-  period: '2020 — 2024',
-  location: 'Vijayawada, India',
-};
+export const education: readonly Education[] = [
+  {
+    degree: 'Bachelor of Technology',
+    specialisation: 'Computer Science & Engineering — Artificial Intelligence and Machine Learning',
+    institution: 'S.R.K Institute of Technology',
+    university: 'JNTU Kakinada',
+    period: '2020 — 2024',
+    location: 'Vijayawada, Andhra Pradesh',
+    cgpa: '7.87',
+  },
+  {
+    degree: 'Intermediate (AP Board — MPC)',
+    institution: 'Sri Chaitanya Junior College',
+    period: '2018 — 2020',
+    location: 'Vijayawada, Andhra Pradesh',
+    cgpa: '8.98',
+  },
+  {
+    degree: 'SSC',
+    institution: 'Gowtham E.M High School',
+    period: '2018',
+    location: 'Vijayawada, Andhra Pradesh',
+  },
+];
 
 export const strengths: readonly { title: string; icon: IconComponent }[] = [
   { title: 'End-to-end product development', icon: Rocket },

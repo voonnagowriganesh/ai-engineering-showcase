@@ -179,11 +179,12 @@ export interface Service {
 
 export interface Education {
   readonly degree: string;
-  readonly specialisation: string;
+  readonly specialisation?: string;
   readonly institution: string;
-  readonly university: string;
+  readonly university?: string;
   readonly period: string;
   readonly location: string;
+  readonly cgpa?: string;
 }
 
 /* ──────────────────────────────────────────────────────────────────────────

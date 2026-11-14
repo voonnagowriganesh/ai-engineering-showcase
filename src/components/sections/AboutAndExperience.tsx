@@ -241,17 +241,37 @@ export function AboutAndExperience(): React.JSX.Element {
                   <h4 className="text-xs font-bold tracking-wider text-emerald-400 uppercase">
                     Education
                   </h4>
-                  <div className="mt-2 rounded-2xl border border-emerald-500/20 bg-emerald-950/40 p-4">
-                    <div className="flex items-start gap-3">
-                      <GraduationCap size={20} className="mt-0.5 text-emerald-400 shrink-0" />
-                      <div>
-                        <p className="font-bold text-sm text-white">{education.degree}</p>
-                        <p className="text-xs text-emerald-300">{education.specialisation}</p>
-                        <p className="mt-1 text-xs text-slate-400">
-                          {education.institution} ({education.period})
-                        </p>
+                  <div className="mt-2 space-y-2.5">
+                    {education.map((entry) => (
+                      <div
+                        key={entry.degree}
+                        className="rounded-2xl border border-emerald-500/20 bg-emerald-950/40 p-4"
+                      >
+                        <div className="flex items-start gap-3">
+                          <GraduationCap size={20} className="mt-0.5 text-emerald-400 shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+                              <p className="font-bold text-sm text-white">{entry.degree}</p>
+                              <span className="font-mono text-2xs text-slate-400">{entry.period}</span>
+                            </div>
+                            {entry.specialisation ? (
+                              <p className="text-xs text-emerald-300">{entry.specialisation}</p>
+                            ) : null}
+                            <p className="mt-1 text-xs text-slate-400">
+                              {entry.institution}
+                              {entry.university ? ` — ${entry.university}` : ''}
+                              {', '}
+                              {entry.location}
+                            </p>
+                            {entry.cgpa ? (
+                              <p className="mt-1 text-xs font-semibold text-emerald-400">
+                                CGPA: {entry.cgpa}
+                              </p>
+                            ) : null}
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
 
