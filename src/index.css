@@ -85,89 +85,97 @@
 }
 
 /* ── Light theme (default) ──────────────────────────────────────────────────
-   A genuinely designed light mode, not an inverted dark mode: warm porcelain
-   surfaces, ink that never reaches pure black, and accents darkened enough to
-   hold WCAG AA contrast against white.                                      */
+   Warm porcelain / ivory surface, deep forest green ink, and rich emerald accents. */
 :root {
-  --c-canvas: #f4f3fd;
+  --c-canvas: #f6f5ef;
   --c-surface: #ffffff;
-  --c-surface-2: #eeebfe;
+  --c-surface-2: #efece1;
   --c-elevated: #ffffff;
 
-  --c-ink: #0b0a1c;
-  --c-ink-muted: #4a4a6b;
-  --c-ink-subtle: #76759a;
+  --c-ink: #07180f;
+  --c-ink-muted: #2d4536;
+  --c-ink-subtle: #567262;
   --c-ink-inverse: #ffffff;
 
-  --c-line: #e3e0f6;
-  --c-line-strong: #c9c4ee;
+  --c-line: #dfdacb;
+  --c-line-strong: #c5bead;
 
-  --c-accent: #0098c7;
-  --c-accent-2: #6d28ff;
-  --c-accent-3: #d916c7;
-  --c-accent-4: #ff5c8a;
-  --c-accent-soft: #e6f6fc;
+  --c-accent: #059669;
+  --c-accent-2: #10b981;
+  --c-accent-3: #22c55e;
+  --c-accent-4: #4ade80;
+  --c-accent-soft: #ecfdf5;
   --c-accent-contrast: #ffffff;
 
-  --c-glass: rgb(255 255 255 / 0.7);
-  --c-glass-line: rgb(109 40 255 / 0.12);
+  --c-glass: rgb(255 255 255 / 0.85);
+  --c-glass-line: rgb(16 185 129 / 0.18);
 
   /* Per-section accent tones (see .tone-* below) */
-  --tone-aqua-1: #0098c7;
-  --tone-aqua-2: #2563eb;
-  --tone-aqua-3: #6d28ff;
-  --tone-indigo-1: #4f46e5;
-  --tone-indigo-2: #6d28ff;
-  --tone-indigo-3: #a21ce0;
-  --tone-magenta-1: #a21ce0;
-  --tone-magenta-2: #d916c7;
-  --tone-magenta-3: #ff5c8a;
-  --tone-emerald-1: #039f7a;
-  --tone-emerald-2: #0098c7;
-  --tone-emerald-3: #2563eb;
+  --tone-aqua-1: #059669;
+  --tone-aqua-2: #10b981;
+  --tone-aqua-3: #22c55e;
+  --tone-indigo-1: #047857;
+  --tone-indigo-2: #059669;
+  --tone-indigo-3: #10b981;
+  --tone-magenta-1: #059669;
+  --tone-magenta-2: #10b981;
+  --tone-magenta-3: #34d399;
+  --tone-emerald-1: #047857;
+  --tone-emerald-2: #10b981;
+  --tone-emerald-3: #34d399;
   --tone-amber-1: #d97706;
-  --tone-amber-2: #e8358a;
-  --tone-amber-3: #a21ce0;
+  --tone-amber-2: #10b981;
+  --tone-amber-3: #22c55e;
 
   /* Ambient-field intensities consumed by the WebGL hero and the CSS glows */
-  --field-opacity: 0.72;
+  --field-opacity: 0.75;
   --grain-opacity: 0.035;
   --glow-strength: 0.45;
 
   color-scheme: light;
 }
 
-/* ── Dark theme ───────────────────────────────────────────────────────────── */
+/* ── Dark theme (Emerald Glow) ───────────────────────────────────────────── */
 :root[data-theme='dark'] {
-  --c-canvas: #05030f;
-  --c-surface: #0c0920;
-  --c-surface-2: #140f2c;
-  --c-elevated: #1b1440;
+  --c-canvas: #04120a;
+  --c-surface: #071c10;
+  --c-surface-2: #0d2919;
+  --c-elevated: #123722;
 
-  --c-ink: #f2f0ff;
-  --c-ink-muted: #a9a6d4;
-  --c-ink-subtle: #726ea8;
-  --c-ink-inverse: #05030f;
+  --c-ink: #f2fcf6;
+  --c-ink-muted: #a3e6be;
+  --c-ink-subtle: #6d937c;
+  --c-ink-inverse: #04120a;
 
-  --c-line: #241d47;
-  --c-line-strong: #382d6b;
+  --c-line: #143823;
+  --c-line-strong: #215537;
 
-  --c-accent: #22e0ff;
-  --c-accent-2: #a855f7;
-  --c-accent-3: #ff5cf0;
-  --c-accent-4: #ff7a9c;
-  --c-accent-soft: #0d2f3d;
-  --c-accent-contrast: #05030f;
+  --c-accent: #10b981;
+  --c-accent-2: #22c55e;
+  --c-accent-3: #4ade80;
+  --c-accent-4: #86efac;
+  --c-accent-soft: rgba(16, 185, 129, 0.15);
+  --c-accent-contrast: #031c0e;
 
-  --c-glass: rgb(16 11 38 / 0.6);
-  --c-glass-line: rgb(168 85 247 / 0.22);
+  --c-glass: rgb(7 28 16 / 0.75);
+  --c-glass-line: rgb(34 197 94 / 0.22);
 
   /* Per-section accent tones (see .tone-* below) */
-  --tone-aqua-1: #22e0ff;
-  --tone-aqua-2: #4f8cff;
-  --tone-aqua-3: #a855f7;
-  --tone-indigo-1: #6d8bff;
-  --tone-indigo-2: #a855f7;
+  --tone-aqua-1: #10b981;
+  --tone-aqua-2: #22c55e;
+  --tone-aqua-3: #4ade80;
+  --tone-indigo-1: #059669;
+  --tone-indigo-2: #10b981;
+  --tone-indigo-3: #34d399;
+  --tone-magenta-1: #10b981;
+  --tone-magenta-2: #34d399;
+  --tone-magenta-3: #4ade80;
+  --tone-emerald-1: #10b981;
+  --tone-emerald-2: #22c55e;
+  --tone-emerald-3: #4ade80;
+  --tone-amber-1: #10b981;
+  --tone-amber-2: #34d399;
+  --tone-amber-3: #4ade80;
   --tone-indigo-3: #ff5cf0;
   --tone-magenta-1: #c084fc;
   --tone-magenta-2: #ff5cf0;

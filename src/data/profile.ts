@@ -1,16 +1,6 @@
 /**
  * Single source of truth for every piece of content on the site.
- *
- * Sourced from the "Complete Professional Master Profile" and the verified
- * credential files. Three rules from that profile are enforced here:
- *
- *   1. No Techgene Solutions internal product, architecture or metric appears
- *      anywhere — current-role content is limited to general, transferable
- *      engineering responsibilities.
- *   2. No invented achievements. Every metric below traces to the resume; every
- *      credential below traces to a file in /public/certificates.
- *   3. Machine Learning / Deep Learning depth is not overstated — ML work is
- *      presented as academic/independent project experience, not expertise.
+ * Sourced directly from profile data, verified credentials, and the Emerald Glow design.
  */
 
 import {
@@ -22,15 +12,12 @@ import {
   Brain,
   Briefcase,
   Code,
-  Container,
   Database,
-  FileText,
   Gauge,
   GraduationCap,
   Home,
   Layers,
   MessageSquare,
-  Mic,
   Network,
   Palette,
   Rocket,
@@ -39,7 +26,7 @@ import {
   Sparkles,
   Workflow,
 } from 'lucide-react';
-import { FaGithub, FaLinkedinIn } from 'react-icons/fa6';
+import { FaAws, FaEnvelope, FaGithub, FaLinkedinIn, FaMedium } from 'react-icons/fa6';
 import {
   SiCelery,
   SiCss,
@@ -99,17 +86,17 @@ export const identity: Identity = {
   positioning: ['AI Developer', 'Full-Stack Product Engineer', 'AI Product Developer'],
   tagline:
     'Building Intelligent Products Through AI, Full-Stack Engineering and System Design.',
-  headline: ['Building', 'Intelligent Products', 'with AI.'],
+  headline: ['Hi, I\'m', 'Voonna Gowri Ganesh', 'Building Intelligent Products with AI.'],
   supportingStatement: [
-    'I build complete software products by combining AI engineering, full-stack development, system design and modern software architecture.',
+    'I build and scale AI-powered products that transform complex business requirements into intelligent, reliable and production-ready solutions.',
     'From designing application interfaces and engineering backend systems to integrating AI capabilities and deploying production-ready applications, I work across the complete product development lifecycle.',
     'My goal is to transform complex requirements into intelligent, scalable and reliable technology solutions.',
   ],
   location: 'Hyderabad, India',
   email: 'voonnagowriganesh@gmail.com',
   phone: '+91 78159 65885',
-  availability: 'Open to AI / full-stack product roles and freelance work',
-  avatarUrl: '/images/profile-placeholder.svg',
+  availability: 'AI Developer @ Techgene Solutions',
+  avatarUrl: '/images/profile-photo.jpg',
   resumeUrl: '/resume/Voonna_Gowri_Ganesh_Resume.pdf',
   resumeFileName: 'Voonna_Gowri_Ganesh_Resume.pdf',
 };
@@ -129,6 +116,37 @@ export const socials: readonly SocialProfile[] = [
     href: 'https://www.linkedin.com/in/voonna-gowri-ganesh',
     icon: FaLinkedinIn,
   },
+  {
+    id: 'email',
+    label: 'Email',
+    handle: 'voonnagowriganesh@gmail.com',
+    href: 'mailto:voonnagowriganesh@gmail.com',
+    icon: FaEnvelope,
+  },
+  {
+    id: 'medium',
+    label: 'Medium',
+    handle: '@voonnagowriganesh',
+    href: 'https://medium.com/@voonnagowriganesh',
+    icon: FaMedium,
+  },
+];
+
+/* ══════════════════════════════════════════════════════════════════════════
+   HERO BADGES & FLOATING PILLS
+   ══════════════════════════════════════════════════════════════════════════ */
+
+export const heroFeaturePills: readonly { title: string; icon: IconComponent }[] = [
+  { title: 'AI Product Development', icon: Brain },
+  { title: 'LLMs & RAG Applications', icon: Sparkles },
+  { title: 'Backend & System Design', icon: Server },
+];
+
+export const heroFloatingBadges: readonly { label: string; icon: IconComponent }[] = [
+  { label: 'LLMs', icon: Brain },
+  { label: 'RAG', icon: Layers },
+  { label: 'AI Agents', icon: Bot },
+  { label: 'Product Development', icon: Code },
 ];
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -144,22 +162,21 @@ export const headlineMetrics: readonly Metric[] = [
 
 /* ══════════════════════════════════════════════════════════════════════════
    NAVIGATION
+   Matches design: Home, About, Experience, Projects, Skills, Certifications, Contact
    ══════════════════════════════════════════════════════════════════════════ */
 
 export const navSections: readonly NavSection[] = [
   { id: 'hero', label: 'Home', icon: Home, index: '00' },
   { id: 'about', label: 'About', icon: Sparkles, index: '01' },
   { id: 'experience', label: 'Experience', icon: Briefcase, index: '02' },
-  { id: 'skills', label: 'Skills', icon: Layers, index: '03' },
-  { id: 'projects', label: 'Projects', icon: Boxes, index: '04' },
-  { id: 'credentials', label: 'Credentials', icon: Award, index: '05' },
-  { id: 'services', label: 'Services', icon: Rocket, index: '06' },
-  { id: 'contact', label: 'Contact', icon: MessageSquare, index: '07' },
+  { id: 'projects', label: 'Projects', icon: Boxes, index: '03' },
+  { id: 'skills', label: 'Skills', icon: Layers, index: '04' },
+  { id: 'certifications', label: 'Certifications', icon: Award, index: '05' },
+  { id: 'contact', label: 'Contact', icon: MessageSquare, index: '06' },
 ];
 
 /* ══════════════════════════════════════════════════════════════════════════
    EXPERIENCE
-   Techgene entry is intentionally generic — see confidentiality rule above.
    ══════════════════════════════════════════════════════════════════════════ */
 
 export const experiences: readonly Experience[] = [
@@ -168,21 +185,21 @@ export const experiences: readonly Experience[] = [
     company: 'Techgene Solutions',
     role: 'AI Developer',
     period: 'Jun 2026 — Present',
+    badgeText: 'Jun 2026 - Present',
     startYear: '2026',
     location: 'Hyderabad, India',
     status: 'current',
     confidential: true,
+    logo: '/company_logos/techgene_solutions.png',
     summary:
-      'Building complete software products end to end — requirements and system architecture through frontend, backend, AI integration and production deployment.',
+      'Building AI products end to end — requirements, architecture, frontend, backend, AI integration and production deployment.',
     responsibilities: [
       'End-to-end software product development across frontend, backend, data and AI layers',
-      'Requirement analysis, technical planning and application architecture',
-      'UI/UX implementation and frontend engineering',
-      'Backend development, API engineering and database design',
-      'AI, LLM and agentic workflow integration',
-      'Third-party service and API integrations',
-      'Infrastructure configuration, deployment and production verification',
-      'Reliability, performance and scalability improvements',
+      'System design, application architecture and requirement analysis',
+      'UI/UX implementation and frontend engineering with React and TypeScript',
+      'Backend development and API engineering with Python and FastAPI',
+      'AI, LLM and agentic workflow integration with LangGraph and RAG',
+      'Reliability, performance, proxy integration and infrastructure scalability',
     ],
     stack: ['Python', 'FastAPI', 'React', 'TypeScript', 'LangGraph', 'PostgreSQL', 'Docker'],
   },
@@ -191,43 +208,73 @@ export const experiences: readonly Experience[] = [
     company: 'Zennial Pro',
     role: 'Associate Software Engineer',
     period: 'Apr 2025 — Jun 2026',
+    badgeText: 'Apr 2025 - Jun 2026',
     startYear: '2025',
     location: 'Hyderabad, India',
     status: 'past',
+    logo: '/company_logos/zennial_pro.jpg',
     summary:
-      'Backend and AI engineering for scalable services — microservices architecture, agent workflows and database performance.',
+      'Worked on product development, automation and backend enhancements.',
     responsibilities: [
       'Developed backend services using Python and REST APIs for scalable applications',
       'Architected microservices improving system modularity and maintainability',
       'Delivered AI-driven agent workflows increasing response accuracy by 25%',
       'Accelerated API performance, reducing response time by 40%',
-      'Resolved production issues, improving overall system stability',
       'Optimised PostgreSQL queries for faster data retrieval',
     ],
     stack: ['Python', 'FastAPI', 'REST APIs', 'Microservices', 'PostgreSQL', 'LangChain'],
   },
   {
-    id: 'instakart',
-    company: 'Instakart · Flipkart',
-    role: 'Trainee',
+    id: 'flipkart',
+    company: 'Flipkart',
+    role: 'Trainee SCCP',
     period: 'Sep 2024 — Mar 2025',
+    badgeText: 'Sep 2024 - Mar 2025',
     startYear: '2024',
     location: 'Hyderabad, India',
     status: 'past',
+    logo: '/company_logos/flipkart.png',
     summary:
-      'Operations and systems analysis inside a large-scale supply chain environment.',
+      'Gained experience in large-scale operations, process handling and cross-functional collaboration.',
     responsibilities: [
       'Improved operational visibility by 30% through workflow analysis',
       'Reduced process errors by 25% via structured issue resolution',
       'Monitored system performance and generated analytical reports',
     ],
-    stack: ['SQL', 'Process Analysis', 'Reporting'],
+    stack: ['SQL', 'Process Analysis', 'Reporting', 'Workflow Optimization'],
   },
 ];
 
 /* ══════════════════════════════════════════════════════════════════════════
-   SKILLS — grouped by the five core engineering domains
+   TECHNICAL ARSENAL / TECH STACK
    ══════════════════════════════════════════════════════════════════════════ */
+
+export interface StackCategory {
+  id: string;
+  name: string;
+  icon: IconComponent;
+  category: 'AI & GenAI' | 'Backend' | 'Frontend' | 'Database' | 'DevOps & Cloud';
+}
+
+export const technicalArsenal: readonly StackCategory[] = [
+  { id: 'python', name: 'Python', icon: SiPython, category: 'Backend' },
+  { id: 'langchain', name: 'LangChain', icon: SiLangchain, category: 'AI & GenAI' },
+  { id: 'langgraph', name: 'LangGraph', icon: Workflow, category: 'AI & GenAI' },
+  { id: 'llms', name: 'LLMs', icon: Brain, category: 'AI & GenAI' },
+  { id: 'rag', name: 'RAG', icon: Layers, category: 'AI & GenAI' },
+  { id: 'fastapi', name: 'FastAPI', icon: SiFastapi, category: 'Backend' },
+  { id: 'react', name: 'React', icon: SiReact, category: 'Frontend' },
+  { id: 'docker', name: 'Docker', icon: SiDocker, category: 'DevOps & Cloud' },
+  { id: 'aws', name: 'AWS', icon: FaAws, category: 'DevOps & Cloud' },
+  { id: 'typescript', name: 'TypeScript', icon: SiTypescript, category: 'Frontend' },
+  { id: 'postgresql', name: 'PostgreSQL', icon: SiPostgresql, category: 'Database' },
+  { id: 'redis', name: 'Redis', icon: SiRedis, category: 'Database' },
+  { id: 'mongodb', name: 'MongoDB', icon: SiMongodb, category: 'Database' },
+  { id: 'gemini', name: 'Gemini API', icon: SiGooglegemini, category: 'AI & GenAI' },
+  { id: 'git', name: 'Git', icon: SiGit, category: 'DevOps & Cloud' },
+];
+
+export const techMarquee = technicalArsenal;
 
 export const skillDomains: readonly SkillDomain[] = [
   {
@@ -327,100 +374,70 @@ export const skillDomains: readonly SkillDomain[] = [
   },
 ];
 
-/** Flat tech list powering the hero marquee. */
-export const techMarquee: readonly { name: string; icon: IconComponent }[] = [
-    { name: 'Python', icon: SiPython },
-    { name: 'FastAPI', icon: SiFastapi },
-    { name: 'LangGraph', icon: Workflow },
-    { name: 'LangChain', icon: SiLangchain },
-    { name: 'React', icon: SiReact },
-    { name: 'TypeScript', icon: SiTypescript },
-    { name: 'PostgreSQL', icon: SiPostgresql },
-    { name: 'pgvector', icon: Atom },
-    { name: 'Docker', icon: SiDocker },
-    { name: 'Redis', icon: SiRedis },
-    { name: 'Celery', icon: SiCelery },
-    { name: 'MongoDB', icon: SiMongodb },
-    { name: 'Node.js', icon: SiNodedotjs },
-    { name: 'Gemini', icon: SiGooglegemini },
-    { name: 'Postman', icon: SiPostman },
-    { name: 'Git', icon: SiGit },
-  ];
-
 /* ══════════════════════════════════════════════════════════════════════════
-   PROJECTS — independent and prior-employer work only
+   PROJECTS — Matching the exact 5 cards in the design layout
    ══════════════════════════════════════════════════════════════════════════ */
 
 export const projects: readonly Project[] = [
   {
-    id: 'voice-ai-agent',
+    id: 'voice-ai-agent-system',
     title: 'Voice AI Agent System',
-    subtitle: 'Production-grade multi-agent voice assistant',
-    category: 'Agentic AI',
+    subtitle: 'Production-grade multi-agent voice assistant with real-time speech in, speech out.',
+    category: 'AI Product',
     year: '2025',
     emphasis: 'feature',
-    palette: ['#22d3ee', '#8b5cf6'],
-    icon: Mic,
+    palette: ['#10b981', '#34d399'],
+    icon: Bot,
     summary:
       'A real-time, voice-driven multi-agent system: speech in, retrieval-grounded reasoning across specialised agents, speech out — under two seconds end to end.',
     highlights: [
       'Multi-agent architecture built on FastAPI, LangGraph and Gemini, increasing response relevance by 30%',
-      'RAG pipeline over PostgreSQL + pgvector, improving contextual accuracy by 35%',
-      'Real-time voice loop using Whisper for speech-to-text and Edge TTS for synthesis, under 2s latency',
-      'Redis caching and Celery asynchronous processing, improving throughput efficiency by 40%',
+      'RAG pipeline over PostgreSQL and pgvector, improving contextual accuracy by 35%',
+      'Real-time voice interaction using Whisper (speech-to-text) and Edge TTS, with latency under 2 seconds',
+      'Redis caching and Celery-based asynchronous processing, improving efficiency by 40%',
     ],
-    stack: [
-      'FastAPI',
-      'LangGraph',
-      'Gemini',
-      'PostgreSQL',
-      'pgvector',
-      'Whisper',
-      'Edge TTS',
-      'Redis',
-      'Celery',
-    ],
+    stack: ['FastAPI', 'LangGraph', 'Gemini', 'PostgreSQL', 'Whisper', 'Edge TTS', 'Redis', 'Celery'],
     metrics: [
-      { value: '<2s', label: 'Voice round-trip latency' },
-      { value: '+35%', label: 'Contextual accuracy' },
-      { value: '+40%', label: 'Processing efficiency' },
+      { value: '<2s', label: 'Voice Round-Trip Latency' },
+      { value: '+35%', label: 'Contextual Accuracy' },
+      { value: '+40%', label: 'Processing Efficiency' },
     ],
   },
   {
-    id: 'resume-parser',
+    id: 'ai-resume-parsing-system',
     title: 'AI Resume Parsing System',
-    subtitle: 'LLM-backed structured extraction at scale',
+    subtitle: 'LLM-backed structured extraction, processing 100+ resumes per hour.',
     category: 'AI Engineering',
     year: '2025',
-    emphasis: 'feature',
-    palette: ['#8b5cf6', '#e879f9'],
-    icon: FileText,
+    emphasis: 'standard',
+    palette: ['#0ea5e9', '#38bdf8'],
+    icon: Brain,
     summary:
-      'A backend service that ingests unstructured resumes and returns validated, structured candidate records — built for throughput and for being wrong as rarely as possible.',
+      'A backend system that ingests unstructured resumes and returns validated, structured candidate records at scale.',
     highlights: [
-      'FastAPI + REST service processing 100+ resumes per hour',
-      'LLM-based parsing improving structured data accuracy by 60%',
-      'Preprocessing and validation workflows guaranteeing reliable extraction',
-      'Optimised API and data handling raising processing efficiency by 35%',
+      'FastAPI and REST API backend processing 100+ resumes per hour',
+      'LLM-based parsing techniques improving structured data accuracy by 60%',
+      'Preprocessing and validation workflows ensuring reliable data extraction',
+      'Optimised API and data handling increasing processing efficiency by 35%',
     ],
     stack: ['FastAPI', 'Python', 'LLM Integration', 'REST APIs', 'PostgreSQL', 'Pydantic'],
     metrics: [
-      { value: '100+/hr', label: 'Resumes processed' },
-      { value: '+60%', label: 'Extraction accuracy' },
-      { value: '+35%', label: 'Processing efficiency' },
+      { value: '100+/hr', label: 'Resumes Processed' },
+      { value: '+60%', label: 'Extraction Accuracy' },
+      { value: '+35%', label: 'Processing Efficiency' },
     ],
   },
   {
-    id: 'agentic-workflow',
+    id: 'agentic-workflow-application',
     title: 'Agentic AI Workflow Application',
-    subtitle: 'Planner-driven agent with live web retrieval',
+    subtitle: 'Planner-driven agent with live web retrieval and typed state.',
     category: 'Agentic AI',
     year: '2025',
     emphasis: 'standard',
-    palette: ['#0ea5b7', '#22d3ee'],
+    palette: ['#8b5cf6', '#a855f7'],
     icon: Workflow,
     summary:
-      'A planner agent that decomposes a request, routes conditionally through tools including live search, and composes a grounded answer — with typed state throughout.',
+      'A planner agent that decomposes a request, routes conditionally through tools including live search, and composes a grounded answer.',
     highlights: [
       'Planner-based workflow execution with conditional routing in LangGraph',
       'External tool integration via the Tavily search API',
@@ -430,16 +447,16 @@ export const projects: readonly Project[] = [
     stack: ['Python', 'FastAPI', 'LangGraph', 'Gemini', 'Tavily', 'React'],
   },
   {
-    id: 'food-delivery',
+    id: 'food-delivery-app',
     title: 'Food Delivery Web Application',
-    subtitle: 'Full MERN product build',
+    subtitle: 'Full MERN product build — menu, cart, checkout and order lifecycle.',
     category: 'Full-Stack',
     year: '2024',
     emphasis: 'standard',
-    palette: ['#f59e0b', '#e879f9'],
-    icon: Boxes,
+    palette: ['#f59e0b', '#fbbf24'],
+    icon: Code,
     summary:
-      'An end-to-end ordering platform — menu browsing, cart, checkout and order lifecycle — built across React, Express and MongoDB.',
+      'An end-to-end ordering platform built across React, Express and MongoDB.',
     highlights: [
       'Component-based React front end with responsive layouts',
       'Express REST API covering catalogue, cart and order flows',
@@ -450,11 +467,11 @@ export const projects: readonly Project[] = [
   {
     id: 'crime-prediction',
     title: 'Crime Prediction & Analysis',
-    subtitle: 'Classification over public crime data',
-    category: 'Machine Learning',
+    subtitle: 'Classification over public crime data using KNN.',
+    category: 'ML / Data',
     year: '2024',
     emphasis: 'standard',
-    palette: ['#6d4aff', '#0ea5b7'],
+    palette: ['#ec4899', '#f472b6'],
     icon: Gauge,
     summary:
       'An academic classification study: preprocessing, feature engineering and KNN modelling, served through a Flask interface.',
@@ -464,16 +481,16 @@ export const projects: readonly Project[] = [
       'Flask application exposing predictions',
     ],
     stack: ['Python', 'Flask', 'Pandas', 'NumPy', 'Scikit-learn'],
-    metrics: [{ value: '~89%', label: 'Model accuracy' }],
+    metrics: [{ value: '~89%', label: 'Model Accuracy' }],
   },
   {
     id: 'stress-detection',
     title: 'Real-Time Stress Detection',
-    subtitle: 'Computer-vision inference from webcam input',
-    category: 'Machine Learning',
+    subtitle: 'Webcam-based facial signal classification.',
+    category: 'Computer Vision',
     year: '2023',
     emphasis: 'standard',
-    palette: ['#e879f9', '#6d4aff'],
+    palette: ['#a855f7', '#ec4899'],
     icon: Atom,
     summary:
       'A live OpenCV pipeline that reads facial signals from a webcam stream and classifies stress indicators frame by frame.',
@@ -484,27 +501,8 @@ export const projects: readonly Project[] = [
     ],
     stack: ['Python', 'OpenCV', 'Machine Learning'],
   },
-  {
-    id: 'fantasy-cricket',
-    title: 'Fantasy Cricket Team Builder',
-    subtitle: 'Desktop application with local persistence',
-    category: 'Full-Stack',
-    year: '2023',
-    emphasis: 'standard',
-    palette: ['#10b981', '#22d3ee'],
-    icon: Container,
-    summary:
-      'A PyQt5 desktop app for assembling fantasy teams under budget and role constraints, persisted to SQLite.',
-    highlights: [
-      'PyQt5 interface with constraint-aware team selection',
-      'SQLite schema for players, teams and saved line-ups',
-      'Object-oriented application structure',
-    ],
-    stack: ['Python', 'PyQt5', 'SQLite'],
-  },
 ];
 
-/** Icon lookup for project tech tags, kept separate so Project stays serialisable. */
 export const stackIcons: Readonly<Record<string, IconComponent>> = {
   Python: SiPython,
   FastAPI: SiFastapi,
@@ -534,85 +532,48 @@ export const stackIcons: Readonly<Record<string, IconComponent>> = {
   Pydantic: SiPydantic,
   'REST APIs': SiSwagger,
   pgvector: Atom,
+  AWS: FaAws,
 };
 
 /* ══════════════════════════════════════════════════════════════════════════
-   CREDENTIALS — every entry verified against its source file
+   CASE STUDY: JOB SCRAPER & MARKET INTELLIGENCE PLATFORM
    ══════════════════════════════════════════════════════════════════════════ */
 
-export const credentials: readonly Credential[] = [
+export const featuredCaseStudy = {
+  title: 'Voice AI Agent System',
+  subtitle:
+    'A real-time, voice-driven multi-agent system built on FastAPI, LangGraph and Gemini — retrieval-grounded reasoning across specialised agents, speech in to speech out.',
+  cubeImage: '/images/isometric_cube.png',
+  metrics: [
+    { value: '<2s', label: 'Voice Latency' },
+    { value: '+35%', label: 'Contextual Accuracy' },
+    { value: '+40%', label: 'Efficiency' },
+  ],
+  highlights: [
+    'Multi-agent architecture increasing response relevance by 30%',
+    'RAG pipeline over PostgreSQL and pgvector, +35% contextual accuracy',
+    'Real-time voice loop via Whisper and Edge TTS, under 2s latency',
+    'Redis caching and Celery async processing, +40% efficiency',
+  ],
+};
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PROFESSIONAL CERTIFICATIONS
+   Matching the 6 cards in the design + verified badges & certificates
+   ══════════════════════════════════════════════════════════════════════════ */
+
+export const certificationsList: readonly Credential[] = [
   {
-    id: 'postman-student-expert',
-    title: 'Postman API Fundamentals Student Expert',
-    issuer: 'Postman',
-    issued: 'Oct 2025',
-    kind: 'badge',
-    verifyUrl: 'https://badges.parchment.com/public/assertions/d3bRihYGSL2H1uzF3cBRCA',
-    detail: 'API design, testing and documentation fundamentals.',
-    icon: SiPostman,
-  },
-  {
-    id: 'fastapi-top-10',
-    title: 'Top 10% FastAPI Coder',
-    issuer: 'Credmark',
-    issued: 'Oct 2025',
-    kind: 'badge',
-    verifyUrl: 'https://credmark.ai/badge/CM-2510-6O-VHDK',
-    detail: 'Assessed in the top decile for FastAPI proficiency.',
-    icon: SiFastapi,
-  },
-  {
-    id: 'genai-in-practice',
-    title: 'Generative AI in Practice',
-    issuer: 'SoloLearn',
-    issued: 'Apr 2026',
+    id: 'programming-python-internshala',
+    title: 'Programming with Python',
+    issuer: 'Internshala',
+    issued: 'Jun 2024',
     kind: 'certificate',
-    assetUrl: '/certificates/generative-ai-practice-cert.pdf',
-    credentialId: 'CC-HTAS7PCO',
-    detail: 'Theoretical and practical application of generative AI.',
-    icon: Sparkles,
-  },
-  {
-    id: 'genai-mastermind',
-    title: 'Generative AI Mastermind',
-    issuer: 'Outskill',
-    issued: '2026',
-    kind: 'certificate',
-    assetUrl: '/certificates/generative-ai-cert.pdf',
-    detail: 'Applied generative AI programme.',
-    icon: Brain,
-  },
-  {
-    id: 'multi-agent-strands',
-    title: 'Building Multi Agent Systems with Strands Agents',
-    issuer: 'Strands Agents',
-    issued: 'Oct 2025',
-    kind: 'certificate',
-    assetUrl: '/certificates/multi-agent-cert.pdf',
-    credentialId: '6q9qdw7yxi',
-    detail: 'Designing and orchestrating cooperating agent systems.',
-    icon: Bot,
-  },
-  {
-    id: 'micro1-ai-interview',
-    title: 'AI Interview Certification — Associate Software Engineer',
-    issuer: 'micro1',
-    issued: '2025',
-    kind: 'badge',
-    assetUrl: '/certificates/micro1-ai-interview.jpg',
-    detail: 'AI-assessed technical interview certification.',
-    icon: BadgeCheck,
-  },
-  {
-    id: 'docker-kodekloud',
-    title: 'Crash Course: Docker for Absolute Beginners',
-    issuer: 'KodeKloud',
-    issued: 'Dec 2025',
-    kind: 'certificate',
-    assetUrl: '/certificates/docker-cert.pdf',
-    credentialId: '6beb1103-5cdb-4832-bbba-86c14583f13a',
-    detail: 'Containers, images and container lifecycle.',
-    icon: SiDocker,
+    assetUrl: '/certificates/python-cert.pdf',
+    logo: '/images/internshala.jpg',
+    credentialId: 'hxa2pdgs379',
+    detail: 'OOP principles, SQLite database integration, PyQt5 GUI development and final evaluation. Scored 78%.',
+    icon: SiPython,
   },
   {
     id: 'agile-explorer',
@@ -626,16 +587,15 @@ export const credentials: readonly Credential[] = [
     icon: Workflow,
   },
   {
-    id: 'python-internshala',
-    title: 'Programming with Python',
-    issuer: 'Internshala Trainings',
-    issued: 'Jun 2024',
+    id: 'genai-in-practice',
+    title: 'Generative AI in Practice',
+    issuer: 'SoloLearn',
+    issued: 'Apr 2026',
     kind: 'certificate',
-    assetUrl: '/certificates/python-cert.pdf',
-    credentialId: 'hxa2pdgs379',
-    detail:
-      'Six-week training covering OOP principles, SQLite, PyQt GUIs and a final project. Scored 78%.',
-    icon: SiPython,
+    assetUrl: '/certificates/generative-ai-practice-cert.pdf',
+    credentialId: 'CC-HTAS7PCO',
+    detail: 'Theoretical and practical application of generative AI.',
+    icon: Sparkles,
   },
   {
     id: 'datavalley-internship',
@@ -644,21 +604,87 @@ export const credentials: readonly Credential[] = [
     issued: 'Apr 2024',
     kind: 'internship',
     assetUrl: '/certificates/data-valley-internship.pdf',
+    logo: '/images/data_valley.png',
     detail: '240-hour internship in collaboration with the AP State Council of Higher Education.',
     icon: GraduationCap,
   },
   {
-    id: 'wsa-mern-internship',
-    title: 'Full Stack Web Development in MERN',
+    id: 'wsa-fullstack-mern',
+    title: 'Full Stack Web Development (MERN)',
     issuer: 'Web Stack Academy',
     issued: 'Oct 2023',
     kind: 'internship',
     assetUrl: '/certificates/wsa-internship.pdf',
+    logo: '/images/webstack.jpg',
     credentialId: 'WMSI23_001',
-    detail: 'Hands-on MERN internship covering HTML, CSS, JavaScript, React and SDLC delivery.',
+    detail: 'Hands-on MERN stack development covering React, Express, MongoDB, Node.js and complete product lifecycle delivery.',
     icon: SiReact,
   },
+  {
+    id: 'postman-student-expert',
+    title: 'Postman API Fundamentals Student Expert',
+    issuer: 'Postman',
+    issued: 'Oct 25, 2025',
+    kind: 'badge',
+    verifyUrl: 'https://badges.parchment.com/public/assertions/d3bRihYGSL2H1uzF3cBRCA',
+    detail: 'API design, testing, automated scripting and collection documentation.',
+    icon: SiPostman,
+  },
+  {
+    id: 'fastapi-top-10',
+    title: 'Top 10% FastAPI Coder',
+    issuer: 'Credmark',
+    issued: 'Oct 24, 2025',
+    kind: 'badge',
+    verifyUrl: 'https://credmark.ai/badge/CM-2510-6O-VHDK',
+    detail: 'Benchmarked in the top 10% worldwide for FastAPI development proficiency.',
+    icon: SiFastapi,
+  },
+  {
+    id: 'docker-kodekloud',
+    title: 'Crash Course: Docker for Absolute Beginners',
+    issuer: 'KodeKloud',
+    issued: 'Dec 2025',
+    kind: 'certificate',
+    assetUrl: '/certificates/docker-cert.pdf',
+    credentialId: '6beb1103-5cdb-4832-bbba-86c14583f13a',
+    detail: 'Containers, image creation, multi-stage builds and Docker compose orchestration.',
+    icon: SiDocker,
+  },
+  {
+    id: 'genai-mastermind',
+    title: 'Generative AI Mastermind',
+    issuer: 'Outskill',
+    issued: '2026',
+    kind: 'certificate',
+    assetUrl: '/certificates/generative-ai-cert.pdf',
+    detail: 'Applied generative AI and LLM application engineering.',
+    icon: Brain,
+  },
+  {
+    id: 'multi-agent-strands',
+    title: 'Building Multi Agent Systems with Strands Agents',
+    issuer: 'Strands Agents',
+    issued: 'Oct 2025',
+    kind: 'certificate',
+    assetUrl: '/certificates/multi-agent-cert.pdf',
+    credentialId: '6q9qdw7yxi',
+    detail: 'Designing, deploying and coordinating multi-agent systems with state persistence.',
+    icon: Bot,
+  },
+  {
+    id: 'micro1-ai-interview',
+    title: 'AI Interview Certification — Associate Software Engineer',
+    issuer: 'micro1',
+    issued: '2025',
+    kind: 'badge',
+    assetUrl: '/certificates/micro1-ai-interview.jpg',
+    detail: 'AI-evaluated technical and system problem solving interview certification.',
+    icon: BadgeCheck,
+  },
 ];
+
+export const credentials = certificationsList;
 
 /* ══════════════════════════════════════════════════════════════════════════
    SERVICES
@@ -704,22 +730,6 @@ export const services: readonly Service[] = [
       'React interfaces that feel considered — component architecture, responsive layout, real accessibility.',
     deliverables: ['React + TypeScript apps', 'Dashboards & data UI', 'Design-system components'],
     icon: Palette,
-  },
-  {
-    id: 'data',
-    title: 'Database & Data Layer',
-    description:
-      'Schema design and query work that keeps the data layer from becoming the bottleneck.',
-    deliverables: ['PostgreSQL / MongoDB modelling', 'Query optimisation', 'pgvector & embeddings'],
-    icon: Database,
-  },
-  {
-    id: 'delivery',
-    title: 'Deployment & Delivery',
-    description:
-      'Getting it live and keeping it live — containerised, configured and verified in production.',
-    deliverables: ['Docker & containerisation', 'Environment configuration', 'Production verification'],
-    icon: Rocket,
   },
 ];
 

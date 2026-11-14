@@ -10,8 +10,8 @@ import { cn } from '@/lib/utils';
  * string rebuild for every one of them, every frame.
  */
 const PALETTES: Record<'light' | 'dark', NeuralFieldPalette> = {
-  dark: { node: '148, 163, 210', link: '99, 110, 150', accent: '34, 211, 238' },
-  light: { node: '100, 116, 160', link: '150, 160, 190', accent: '14, 143, 163' },
+  dark: { node: '52, 211, 153', link: '16, 185, 129', accent: '110, 231, 183' },
+  light: { node: '5, 150, 105', link: '16, 185, 129', accent: '4, 120, 87' },
 };
 
 export interface NeuralFieldCanvasProps {

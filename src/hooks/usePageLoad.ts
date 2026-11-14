@@ -69,7 +69,11 @@ export function usePageLoad({
     }
 
     /* ── Signal: images ───────────────────────────────────────────────── */
-    const images = Array.from(document.images);
+    // `loading="lazy"` images below the fold are deliberately not fetched by
+    // the browser until they near the viewport — counting them here made the
+    // preloader wait on images a visitor won't see for a while yet, crawling
+    // toward the 7s timeout on any page with more than a screenful of them.
+    const images = Array.from(document.images).filter((image) => image.loading !== 'lazy');
     if (images.length === 0) {
       imagesReady = true;
     } else {

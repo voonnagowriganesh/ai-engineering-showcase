@@ -8,22 +8,19 @@ import {
   ScrollProgressBar,
   SectionRail,
 } from '@/components/chrome/ScrollProgress';
-import { About } from '@/components/sections/About';
-import { Contact } from '@/components/sections/Contact';
-import { Credentials } from '@/components/sections/Credentials';
-import { Experience } from '@/components/sections/Experience';
-import { Footer } from '@/components/sections/Footer';
 import { Hero } from '@/components/sections/Hero';
-import { Projects } from '@/components/sections/Projects';
-import { Services } from '@/components/sections/Services';
-import { Skills } from '@/components/sections/Skills';
+import { AboutAndExperience } from '@/components/sections/AboutAndExperience';
+import { TechnicalArsenal } from '@/components/sections/TechnicalArsenal';
+import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
+import { CaseStudySection } from '@/components/sections/CaseStudySection';
+import { CertificationsSection } from '@/components/sections/CertificationsSection';
+import { ContactSection } from '@/components/sections/ContactSection';
+import { Footer } from '@/components/sections/Footer';
 import { AmbientBackdrop } from '@/components/ui/primitives';
 import { usePageLoad } from '@/hooks/usePageLoad';
 import { useScrollLock, useSmoothScrollRoot } from '@/hooks/useScroll';
 import { useTheme } from '@/hooks/useTheme';
 
-// cmdk and its focus-management dependencies are ~74KB gzipped and are only
-// needed once the palette is actually opened.
 const CommandPalette = lazy(() =>
   import('@/components/chrome/CommandPalette').then((module) => ({
     default: module.CommandPalette,
@@ -31,14 +28,11 @@ const CommandPalette = lazy(() =>
 );
 
 export function App(): React.JSX.Element {
-  // Mounts the ThemeService for the document. Its return value is unused here —
-  // sub-components read the same service through their own useTheme() call.
   useTheme();
   useSmoothScrollRoot();
 
   const { progress, complete } = usePageLoad();
   const [paletteOpen, setPaletteOpen] = useState(false);
-  // Latches on first open; unmounting the palette would discard cmdk's state.
   const [paletteMounted, setPaletteMounted] = useState(false);
 
   const openPalette = useCallback((): void => {
@@ -46,9 +40,6 @@ export function App(): React.JSX.Element {
     setPaletteOpen(true);
   }, []);
 
-  // Hand off from the zero-JS boot screen in index.html. By the time this runs
-  // React's own preloader has painted over it, so fading the static one out
-  // reads as a single continuous sequence rather than two screens.
   useEffect(() => {
     const boot = document.getElementById('boot');
     if (!boot) return undefined;
@@ -58,8 +49,6 @@ export function App(): React.JSX.Element {
     return () => window.clearTimeout(timer);
   }, []);
 
-  // ⌘K / Ctrl-K lives here rather than inside the lazy palette, which does not
-  // exist until the first open and so could never catch the opening keystroke.
   useEffect(() => {
     const handler = (event: KeyboardEvent): void => {
       if (event.key.toLowerCase() !== 'k' || !(event.metaKey || event.ctrlKey)) return;
@@ -71,15 +60,12 @@ export function App(): React.JSX.Element {
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  // Hold the page still until the preloader has finished its exit.
   useScrollLock(!complete);
 
   return (
     <>
       <Preloader progress={progress} complete={complete} />
 
-      {/* Decorative layers are isolated: if WebGL or the canvas engine throws on
-          an unusual device, the content below still renders normally. */}
       <ErrorBoundary label="AmbientBackdrop">
         <AmbientBackdrop />
       </ErrorBoundary>
@@ -97,13 +83,29 @@ export function App(): React.JSX.Element {
           <Hero />
         </ErrorBoundary>
 
-        <About />
-        <Experience />
-        <Skills />
-        <Projects />
-        <Credentials />
-        <Services />
-        <Contact />
+        <ErrorBoundary label="AboutAndExperience">
+          <AboutAndExperience />
+        </ErrorBoundary>
+
+        <ErrorBoundary label="TechnicalArsenal">
+          <TechnicalArsenal />
+        </ErrorBoundary>
+
+        <ErrorBoundary label="FeaturedProjects">
+          <FeaturedProjects />
+        </ErrorBoundary>
+
+        <ErrorBoundary label="CaseStudySection">
+          <CaseStudySection />
+        </ErrorBoundary>
+
+        <ErrorBoundary label="CertificationsSection">
+          <CertificationsSection />
+        </ErrorBoundary>
+
+        <ErrorBoundary label="ContactSection">
+          <ContactSection />
+        </ErrorBoundary>
       </main>
 
       <Footer />
@@ -112,8 +114,6 @@ export function App(): React.JSX.Element {
 
       <ErrorBoundary label="CommandPalette">
         <Suspense fallback={null}>
-          {/* Mounted only after the first open so the chunk is never fetched
-              for visitors who do not use the palette. */}
           {paletteMounted ? (
             <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
           ) : null}

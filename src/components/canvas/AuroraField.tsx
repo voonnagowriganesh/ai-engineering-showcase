@@ -33,9 +33,9 @@ function readThemePalette(): {
 
   return {
     colours: [
-      toColor('--c-accent', '#22d3ee'),
-      toColor('--c-accent-2', '#8b5cf6'),
-      toColor('--c-accent-3', '#e879f9'),
+      toColor('--c-accent', '#10b981'),
+      toColor('--c-accent-2', '#22c55e'),
+      toColor('--c-accent-3', '#4ade80'),
     ],
     intensity: Number.isFinite(intensityRaw) ? intensityRaw : 1,
   };

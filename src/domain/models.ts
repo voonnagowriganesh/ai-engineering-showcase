@@ -82,6 +82,8 @@ export interface Experience {
   readonly summary: string;
   readonly responsibilities: readonly string[];
   readonly stack: readonly string[];
+  readonly logo?: string;
+  readonly badgeText?: string;
   /** Set when an employer's specifics are under NDA. */
   readonly confidential?: boolean;
 }
@@ -112,7 +114,16 @@ export interface SkillDomain {
    Projects
    ────────────────────────────────────────────────────────────────────────── */
 
-export type ProjectCategory = 'AI Engineering' | 'Agentic AI' | 'Full-Stack' | 'Machine Learning';
+export type ProjectCategory =
+  | 'AI Product'
+  | 'Automation'
+  | 'AI / RAG'
+  | 'ML / Data'
+  | 'Computer Vision'
+  | 'AI Engineering'
+  | 'Agentic AI'
+  | 'Full-Stack'
+  | 'Machine Learning';
 
 export interface Project {
   readonly id: string;
@@ -123,6 +134,7 @@ export interface Project {
   readonly summary: string;
   readonly highlights: readonly string[];
   readonly stack: readonly string[];
+  readonly image?: string;
   readonly metrics?: readonly Metric[];
   readonly links?: readonly Link[];
   /** Drives bento sizing: `feature` spans two columns on desktop. */
@@ -149,6 +161,7 @@ export interface Credential {
   readonly verifyUrl?: string;
   readonly credentialId?: string;
   readonly detail?: string;
+  readonly logo?: string;
   readonly icon: IconComponent;
 }
 
