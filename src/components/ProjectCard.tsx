@@ -6,11 +6,12 @@ import { useTilt } from '../hooks/useTilt';
 
 interface ProjectCardProps {
   project: Project;
+  index: number;
   onOpen: () => void;
 }
 
-export function ProjectCard({ project, onOpen }: ProjectCardProps) {
-  const tilt = useTilt<HTMLButtonElement>(5);
+export function ProjectCard({ project, index, onOpen }: ProjectCardProps) {
+  const tilt = useTilt<HTMLButtonElement>(3);
 
   return (
     <motion.button
@@ -20,28 +21,22 @@ export function ProjectCard({ project, onOpen }: ProjectCardProps) {
       onPointerMove={tilt.onPointerMove}
       onPointerLeave={tilt.onPointerLeave}
       style={{ transform: `rotateX(${tilt.tilt.rotateX}deg) rotateY(${tilt.tilt.rotateY}deg)` }}
-      className="group relative flex h-full w-full flex-col overflow-hidden rounded-[1.75rem] border border-ink/10 bg-paper text-left shadow-card transition-transform duration-150 ease-out [perspective:1000px]"
+      className="group flex min-h-[420px] w-full flex-col gap-6 overflow-hidden rounded-[1.75rem] border border-ink/10 bg-paper p-7 text-left shadow-card transition-transform duration-150 ease-out [perspective:1000px] sm:min-h-[460px] sm:flex-row sm:items-center sm:gap-10 sm:p-10"
     >
-      <div
-        className="relative h-40 w-full overflow-hidden sm:h-48"
-        style={{ backgroundColor: `${project.palette[0]}0d` }}
-      >
-        <ProjectVisual variant={project.visual} palette={project.palette} id={project.id} />
-        <div className="absolute inset-0 bg-gradient-to-t from-paper via-transparent to-transparent" />
-        <span className="absolute left-4 top-4 rounded-full border border-white/50 bg-white/80 px-3 py-1 text-[11px] font-semibold text-ink shadow-soft backdrop-blur">
-          {project.category}
-        </span>
-        <span className="absolute right-4 top-4 label-mono text-[11px] text-ink-faint">{project.year}</span>
-      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-3 text-xs">
+          <span className="label-mono text-ink-faint">0{index + 1}</span>
+          <span className="rounded-full bg-paper-deep px-3 py-1 font-semibold text-ink-soft">{project.category}</span>
+          <span className="label-mono text-ink-faint">{project.year}</span>
+        </div>
 
-      <div className="flex flex-1 flex-col p-6">
-        <h3 className="font-display text-lg font-semibold text-ink transition-colors group-hover:text-signal sm:text-xl">
+        <h3 className="mt-4 font-display text-2xl font-semibold text-ink transition-colors group-hover:text-signal sm:text-3xl lg:text-4xl">
           {project.title}
         </h3>
-        <p className="mt-2 text-sm leading-relaxed text-ink-soft">{project.subtitle}</p>
+        <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-soft sm:text-base">{project.subtitle}</p>
 
         {project.metrics ? (
-          <div className="mt-4 flex flex-wrap gap-4">
+          <div className="mt-5 flex flex-wrap gap-5">
             {project.metrics.slice(0, 3).map((m) => (
               <div key={m.label}>
                 <div className="font-display text-base font-semibold" style={{ color: project.palette[0] }}>
@@ -66,10 +61,18 @@ export function ProjectCard({ project, onOpen }: ProjectCardProps) {
           )}
         </div>
 
-        <div className="mt-auto flex items-center gap-1.5 pt-5 text-sm font-semibold text-signal">
+        <div className="mt-6 flex items-center gap-1.5 text-sm font-semibold text-signal">
           View case study
           <ArrowUpRight size={15} className="transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </div>
+      </div>
+
+      <div
+        className="relative h-48 w-full shrink-0 overflow-hidden rounded-2xl sm:h-full sm:w-80"
+        style={{ backgroundColor: `${project.palette[0]}0d` }}
+      >
+        <ProjectVisual variant={project.visual} palette={project.palette} id={project.id} />
+        <div className="absolute inset-0 bg-gradient-to-t from-paper via-transparent to-transparent sm:bg-gradient-to-l" />
       </div>
     </motion.button>
   );
