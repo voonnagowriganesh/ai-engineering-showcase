@@ -128,6 +128,8 @@ export interface Credential {
   detail: string;
   credentialId?: string;
   verifyUrl?: string;
+  /** Path to the certificate file under public/, e.g. /certificates/x.pdf */
+  assetUrl?: string;
 }
 
 export interface Strength {

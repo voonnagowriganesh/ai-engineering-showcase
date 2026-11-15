@@ -9,7 +9,7 @@ interface CgpaRingProps {
 
 /**
  * Animated circular-progress ring for a CGPA score. Falls back to a simple
- * graduation glyph when no numeric score is recorded (e.g. SSC).
+ * graduation glyph when no numeric score is recorded.
  */
 export function CgpaRing({ cgpa, max = 10, accent }: CgpaRingProps) {
   const ref = useRef<HTMLDivElement | null>(null);

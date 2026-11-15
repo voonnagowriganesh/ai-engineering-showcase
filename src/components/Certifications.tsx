@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Award, BadgeCheck, ChevronLeft, ChevronRight, ExternalLink, GraduationCap, X } from 'lucide-react';
+import { Award, BadgeCheck, ChevronLeft, ChevronRight, ExternalLink, FileText, GraduationCap, X } from 'lucide-react';
 import { certifications } from '../data/content';
 import { SectionHeading } from './SectionHeading';
 import type { Credential, CredentialKind } from '../types';
@@ -505,15 +505,29 @@ export function Certifications() {
                     ) : null}
                   </dl>
 
-                  {openCert.verifyUrl ? (
-                    <a
-                      href={openCert.verifyUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-auto inline-flex items-center gap-2 self-start rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-paper transition hover:-translate-y-0.5"
-                    >
-                      Verify <ExternalLink size={13} />
-                    </a>
+                  {openCert.verifyUrl || openCert.assetUrl ? (
+                    <div className="mt-auto flex flex-wrap gap-2">
+                      {openCert.verifyUrl ? (
+                        <a
+                          href={openCert.verifyUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-2 self-start rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-paper transition hover:-translate-y-0.5"
+                        >
+                          Verify <ExternalLink size={13} />
+                        </a>
+                      ) : null}
+                      {openCert.assetUrl ? (
+                        <a
+                          href={openCert.assetUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-2 self-start rounded-full border border-ink/15 px-5 py-2.5 text-sm font-semibold text-ink transition hover:-translate-y-0.5"
+                        >
+                          View certificate <FileText size={13} />
+                        </a>
+                      ) : null}
+                    </div>
                   ) : null}
                 </div>
               </motion.div>
