@@ -13,6 +13,7 @@ import { AboutAndExperience } from '@/components/sections/AboutAndExperience';
 import { TechnicalArsenal } from '@/components/sections/TechnicalArsenal';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { CaseStudySection } from '@/components/sections/CaseStudySection';
+import { EducationSection } from '@/components/sections/EducationSection';
 import { CertificationsSection } from '@/components/sections/CertificationsSection';
 import { ContactSection } from '@/components/sections/ContactSection';
 import { Footer } from '@/components/sections/Footer';
@@ -62,6 +63,19 @@ export function App(): React.JSX.Element {
 
   useScrollLock(!complete);
 
+  // Hero entrance effects wait for this, so they play as the preloader's
+  // curtains open rather than unseen behind it. The curtains start at 180ms
+  // and take ~1s; at 600ms they're about half open, so the hero's typing,
+  // decode and name trace are all in view when they begin.
+  useEffect(() => {
+    if (!complete) return undefined;
+    const timer = window.setTimeout(() => {
+      document.documentElement.dataset.revealed = 'true';
+      window.dispatchEvent(new Event('app:revealed'));
+    }, 600);
+    return () => window.clearTimeout(timer);
+  }, [complete]);
+
   return (
     <>
       <Preloader progress={progress} complete={complete} />
@@ -97,6 +111,10 @@ export function App(): React.JSX.Element {
 
         <ErrorBoundary label="CaseStudySection">
           <CaseStudySection />
+        </ErrorBoundary>
+
+        <ErrorBoundary label="EducationSection">
+          <EducationSection />
         </ErrorBoundary>
 
         <ErrorBoundary label="CertificationsSection">

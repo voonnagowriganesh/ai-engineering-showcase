@@ -3,10 +3,11 @@ import { Command as CommandPrimitive } from 'cmdk';
 import { AnimatePresence, motion } from 'motion/react';
 import { Copy, Download, ExternalLink, Moon, Search, Sun } from 'lucide-react';
 import { credentials, identity, navSections, projects, socials } from '@/data/profile';
-import { useClipboard } from '@/hooks/useInteractions';
+import { useClipboard, useEscapeKey } from '@/hooks/useInteractions';
 import { useScrollLock, useScrollTo } from '@/hooks/useScroll';
 import { useTheme } from '@/hooks/useTheme';
 import { Icon } from '@/components/ui/primitives';
+import { track } from '@/lib/analytics';
 
 export interface CommandPaletteProps {
   readonly open: boolean;
@@ -27,6 +28,11 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps): Rea
   const { copy } = useClipboard();
 
   useScrollLock(open);
+
+  // cmdk's plain <Command> (unlike Command.Dialog) doesn't close itself on
+  // Escape, despite the ESC hint shown in the input.
+  const close = useCallback((): void => onOpenChange(false), [onOpenChange]);
+  useEscapeKey(open, close);
 
   // NOTE: the ⌘K / Ctrl-K shortcut is bound in App, not here. This component is
   // lazy-loaded and only mounted after the first open, so a listener installed
@@ -60,6 +66,9 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps): Rea
           />
 
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Command palette"
             className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-line bg-surface shadow-[0_40px_100px_-30px_rgb(0_0_0/0.65)]"
             initial={{ opacity: 0, y: -14, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -145,6 +154,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps): Rea
                     value="download resume cv"
                     onSelect={() =>
                       run(() => {
+                        track('resume-download', { from: 'palette' });
                         const anchor = document.createElement('a');
                         anchor.href = identity.resumeUrl;
                         anchor.download = identity.resumeFileName;

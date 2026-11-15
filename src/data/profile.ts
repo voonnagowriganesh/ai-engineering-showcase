@@ -117,8 +117,8 @@ export const identity: Identity = {
   phone: '+91 78159 65885',
   availability: 'AI Developer @ Techgene Solutions',
   avatarUrl: '/images/profile-photo.jpg',
-  resumeUrl: '/resume/Voonna_Gowri_Ganesh_Resume.pdf',
-  resumeFileName: 'Voonna_Gowri_Ganesh_Resume.pdf',
+  resumeUrl: '/resume/VOONNA_GOWRI_GANESH_AI_DEVELOPER.pdf',
+  resumeFileName: 'VOONNA_GOWRI_GANESH_AI_DEVELOPER.pdf',
 };
 
 export const socials: readonly SocialProfile[] = [
@@ -191,8 +191,9 @@ export const navSections: readonly NavSection[] = [
   { id: 'experience', label: 'Experience', icon: Briefcase, index: '02' },
   { id: 'projects', label: 'Projects', icon: Boxes, index: '03' },
   { id: 'skills', label: 'Skills', icon: Layers, index: '04' },
-  { id: 'certifications', label: 'Certifications', icon: Award, index: '05' },
-  { id: 'contact', label: 'Contact', icon: MessageSquare, index: '06' },
+  { id: 'education', label: 'Education', icon: GraduationCap, index: '05' },
+  { id: 'certifications', label: 'Certifications', icon: Award, index: '06' },
+  { id: 'contact', label: 'Contact', icon: MessageSquare, index: '07' },
 ];
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -696,6 +697,8 @@ export const featuredCaseStudy = {
   subtitle:
     'A real-time, voice-driven multi-agent system built on FastAPI, LangGraph and Gemini — retrieval-grounded reasoning across specialised agents, speech in to speech out.',
   cubeImage: '/images/isometric_cube.png',
+  laptopImage: '/images/case_study_laptop.png',
+  githubUrl: 'https://github.com/voonnagowriganesh/voice-agent',
   metrics: [
     { value: '<2s', label: 'Voice Latency' },
     { value: '+35%', label: 'Contextual Accuracy' },

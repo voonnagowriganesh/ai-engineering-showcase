@@ -84,98 +84,97 @@
   --animate-glow-drift: glow-drift 11s ease-in-out infinite;
 }
 
-/* ── Light theme (default) ──────────────────────────────────────────────────
-   Warm porcelain / ivory surface, deep forest green ink, and rich emerald accents. */
+/* ── Light theme (default: Soft Alabaster White & Prestige Indigo) ────────── */
 :root {
-  --c-canvas: #f6f5ef;
-  --c-surface: #ffffff;
-  --c-surface-2: #efece1;
-  --c-elevated: #ffffff;
+  --c-canvas: #F4F5F8;
+  --c-surface: #FFFFFF;
+  --c-surface-2: #E2E4FA;
+  --c-elevated: #FFFFFF;
 
-  --c-ink: #07180f;
-  --c-ink-muted: #2d4536;
-  --c-ink-subtle: #567262;
-  --c-ink-inverse: #ffffff;
+  --c-ink: #1B1F3B;
+  --c-ink-muted: #374151;
+  --c-ink-subtle: #4A3E8C;
+  --c-ink-inverse: #FFFFFF;
 
-  --c-line: #dfdacb;
-  --c-line-strong: #c5bead;
+  --c-line: #E2E4EB;
+  --c-line-strong: #CBD5E1;
 
-  --c-accent: #059669;
-  --c-accent-2: #10b981;
-  --c-accent-3: #22c55e;
-  --c-accent-4: #4ade80;
-  --c-accent-soft: #ecfdf5;
-  --c-accent-contrast: #ffffff;
+  --c-accent: #7C5DFA;
+  --c-accent-2: #4A3E8C;
+  --c-accent-3: #1B1F3B;
+  --c-accent-4: #9277FF;
+  --c-accent-soft: #E2E4FA;
+  --c-accent-contrast: #FFFFFF;
 
-  --c-glass: rgb(255 255 255 / 0.85);
-  --c-glass-line: rgb(16 185 129 / 0.18);
+  --c-glass: rgba(255, 255, 255, 0.9);
+  --c-glass-line: #E2E4EB;
 
-  /* Per-section accent tones (see .tone-* below) */
-  --tone-aqua-1: #059669;
-  --tone-aqua-2: #10b981;
-  --tone-aqua-3: #22c55e;
-  --tone-indigo-1: #047857;
-  --tone-indigo-2: #059669;
-  --tone-indigo-3: #10b981;
-  --tone-magenta-1: #059669;
-  --tone-magenta-2: #10b981;
-  --tone-magenta-3: #34d399;
-  --tone-emerald-1: #047857;
-  --tone-emerald-2: #10b981;
-  --tone-emerald-3: #34d399;
-  --tone-amber-1: #d97706;
-  --tone-amber-2: #10b981;
-  --tone-amber-3: #22c55e;
+  /* Per-section accent tones */
+  --tone-aqua-1: #7C5DFA;
+  --tone-aqua-2: #4A3E8C;
+  --tone-aqua-3: #1B1F3B;
+  --tone-indigo-1: #7C5DFA;
+  --tone-indigo-2: #4A3E8C;
+  --tone-indigo-3: #1B1F3B;
+  --tone-magenta-1: #7C5DFA;
+  --tone-magenta-2: #4A3E8C;
+  --tone-magenta-3: #9277FF;
+  --tone-emerald-1: #7C5DFA;
+  --tone-emerald-2: #4A3E8C;
+  --tone-emerald-3: #E2E4FA;
+  --tone-amber-1: #7C5DFA;
+  --tone-amber-2: #4A3E8C;
+  --tone-amber-3: #E2E4EB;
 
-  /* Ambient-field intensities consumed by the WebGL hero and the CSS glows */
-  --field-opacity: 0.75;
-  --grain-opacity: 0.035;
-  --glow-strength: 0.45;
+  /* Ambient-field intensities */
+  --field-opacity: 0.6;
+  --grain-opacity: 0.025;
+  --glow-strength: 0.5;
 
   color-scheme: light;
 }
 
-/* ── Dark theme (Emerald Glow) ───────────────────────────────────────────── */
+/* ── Dark theme (Deep Royal Indigo) ───────────────────────────────────────── */
 :root[data-theme='dark'] {
-  --c-canvas: #04120a;
-  --c-surface: #071c10;
-  --c-surface-2: #0d2919;
-  --c-elevated: #123722;
+  --c-canvas: #0B0E1E;
+  --c-surface: #151934;
+  --c-surface-2: #1D2245;
+  --c-elevated: #242B56;
 
-  --c-ink: #f2fcf6;
-  --c-ink-muted: #a3e6be;
-  --c-ink-subtle: #6d937c;
-  --c-ink-inverse: #04120a;
+  --c-ink: #F4F5F8;
+  --c-ink-muted: #D1D5DB;
+  --c-ink-subtle: #9EA5C0;
+  --c-ink-inverse: #0B0E1E;
 
-  --c-line: #143823;
-  --c-line-strong: #215537;
+  --c-line: #2A305A;
+  --c-line-strong: #3D467D;
 
-  --c-accent: #10b981;
-  --c-accent-2: #22c55e;
-  --c-accent-3: #4ade80;
-  --c-accent-4: #86efac;
-  --c-accent-soft: rgba(16, 185, 129, 0.15);
-  --c-accent-contrast: #031c0e;
+  --c-accent: #7C5DFA;
+  --c-accent-2: #9277FF;
+  --c-accent-3: #B4A2FF;
+  --c-accent-4: #E2E4FA;
+  --c-accent-soft: rgba(124, 93, 250, 0.2);
+  --c-accent-contrast: #FFFFFF;
 
-  --c-glass: rgb(7 28 16 / 0.75);
-  --c-glass-line: rgb(34 197 94 / 0.22);
+  --c-glass: rgba(21, 25, 52, 0.85);
+  --c-glass-line: rgba(124, 93, 250, 0.25);
 
-  /* Per-section accent tones (see .tone-* below) */
-  --tone-aqua-1: #10b981;
-  --tone-aqua-2: #22c55e;
-  --tone-aqua-3: #4ade80;
-  --tone-indigo-1: #059669;
-  --tone-indigo-2: #10b981;
-  --tone-indigo-3: #34d399;
-  --tone-magenta-1: #10b981;
-  --tone-magenta-2: #34d399;
-  --tone-magenta-3: #4ade80;
-  --tone-emerald-1: #10b981;
-  --tone-emerald-2: #22c55e;
-  --tone-emerald-3: #4ade80;
-  --tone-amber-1: #10b981;
-  --tone-amber-2: #34d399;
-  --tone-amber-3: #4ade80;
+  /* Per-section accent tones */
+  --tone-aqua-1: #7C5DFA;
+  --tone-aqua-2: #9277FF;
+  --tone-aqua-3: #B4A2FF;
+  --tone-indigo-1: #7C5DFA;
+  --tone-indigo-2: #9277FF;
+  --tone-indigo-3: #B4A2FF;
+  --tone-magenta-1: #7C5DFA;
+  --tone-magenta-2: #9277FF;
+  --tone-magenta-3: #B4A2FF;
+  --tone-emerald-1: #7C5DFA;
+  --tone-emerald-2: #9277FF;
+  --tone-emerald-3: #B4A2FF;
+  --tone-amber-1: #7C5DFA;
+  --tone-amber-2: #9277FF;
+  --tone-amber-3: #E2E4FA;
   --tone-indigo-3: #ff5cf0;
   --tone-magenta-1: #c084fc;
   --tone-magenta-2: #ff5cf0;

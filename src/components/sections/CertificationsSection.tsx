@@ -6,6 +6,7 @@ import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/primitives';
 import { useScrollLock } from '@/hooks/useScroll';
 import { useReducedMotion } from '@/hooks/useInteractions';
+import { track } from '@/lib/analytics';
 import type { Credential, CredentialKind } from '@/domain/models';
 
 type RingMode = 'spin' | 'scroll';
@@ -254,25 +255,25 @@ function CertFace({ cert, hint }: { readonly cert: Credential; readonly hint?: s
         {cert.logo ? (
           <img src={cert.logo} alt="" className="max-h-11 max-w-[7rem] rounded-lg object-contain" loading="lazy" />
         ) : (
-          <span className="grid size-11 place-items-center rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-[#06231f]">
+          <span className="grid size-11 place-items-center rounded-xl bg-gradient-to-br from-[#7C5DFA] to-[#4A3E8C] text-white">
             <Icon icon={cert.icon} size={20} />
           </span>
         )}
       </div>
-      <h3 className="mt-4 line-clamp-2 shrink-0 font-display text-[0.95rem] font-bold leading-snug text-[#0a1e12] dark:text-white sm:line-clamp-3">
+      <h3 className="mt-4 line-clamp-2 shrink-0 font-display text-[0.95rem] font-bold leading-snug text-[#1B1F3B] dark:text-white sm:line-clamp-3">
         {cert.title}
       </h3>
-      <p className="mt-1 shrink-0 truncate text-xs font-medium text-stone-500 dark:text-emerald-100/60">{cert.issuer}</p>
+      <p className="mt-1 shrink-0 truncate text-xs font-medium text-[#4A3E8C] dark:text-[#9277FF]">{cert.issuer}</p>
       <div className="mt-auto flex flex-wrap items-center justify-between gap-x-2 gap-y-1 pt-3">
-        <span className="font-mono text-[0.625rem] text-stone-400 dark:text-emerald-500/70">{cert.issued}</span>
-        {hint ? <span className="text-[0.6875rem] font-semibold text-emerald-700 dark:text-emerald-400">{hint}</span> : null}
+        <span className="font-mono text-[0.625rem] text-[#374151] dark:text-slate-400">{cert.issued}</span>
+        {hint ? <span className="text-[0.6875rem] font-semibold text-[#7C5DFA] dark:text-[#9277FF]">{hint}</span> : null}
       </div>
     </>
   );
 }
 
 const faceClass =
-  'flex flex-col rounded-2xl border border-stone-200/80 bg-white p-5 text-left shadow-xl dark:border-emerald-500/25 dark:bg-[#0b2115]';
+  'flex flex-col rounded-3xl border border-[#E2E4EB] bg-[#FFFFFF] p-5 text-left shadow-[0_10px_30px_-10px_rgba(27,31,59,0.06)] dark:border-[#2A305A] dark:bg-[#151934]';
 
 interface OpenCard {
   readonly index: number;
@@ -288,6 +289,24 @@ export function CertificationsSection(): React.JSX.Element {
 
   useScrollLock(open !== null);
 
+  // Focus into the flipped card on open; back to the ring card once the
+  // closing flight has finished (it's `invisible`, so unfocusable, until then).
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const lastOpenedRef = useRef<number | null>(null);
+  const isOpen = open !== null;
+  useEffect(() => {
+    if (isOpen) closeButtonRef.current?.focus({ preventScroll: true });
+  }, [isOpen]);
+  const handleExitComplete = (): void => {
+    setHiddenIndex(null);
+    const index = lastOpenedRef.current;
+    lastOpenedRef.current = null;
+    if (index !== null) {
+      // Wait a frame for `invisible` to be removed before focusing.
+      requestAnimationFrame(() => ring.cardRefs.current[index]?.focus({ preventScroll: true }));
+    }
+  };
+
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (e: KeyboardEvent): void => {
@@ -300,6 +319,7 @@ export function CertificationsSection(): React.JSX.Element {
   const openCard = (index: number): void => {
     const el = ring.cardRefs.current[index];
     if (!el) return;
+    track('cert-flip', { id: certificationsList[index]?.id ?? String(index) });
     const rect = el.getBoundingClientRect();
     const modalWidth = Math.min(384, window.innerWidth - 32);
     setOpen({
@@ -311,6 +331,7 @@ export function CertificationsSection(): React.JSX.Element {
       },
     });
     setHiddenIndex(index);
+    lastOpenedRef.current = index;
   };
 
   const onCardClick = (index: number): void => {
@@ -323,31 +344,31 @@ export function CertificationsSection(): React.JSX.Element {
   const frontCert = certificationsList[ring.front];
   const openCert = open ? certificationsList[open.index] : null;
   const arrowClass =
-    'flex size-9 items-center justify-center rounded-full border border-stone-300 bg-white text-stone-700 shadow-sm transition-all hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-500/30 dark:bg-[#071d12] dark:text-emerald-300 dark:hover:bg-emerald-900/50 dark:hover:text-white';
+    'flex size-9 items-center justify-center rounded-full border border-[#E2E4EB] bg-[#FFFFFF] text-[#1B1F3B] shadow-sm transition-all hover:border-[#7C5DFA] hover:text-[#7C5DFA] dark:border-[#2A305A] dark:bg-[#151934] dark:text-white dark:hover:border-[#7C5DFA]';
 
   return (
     <section
       id="certifications"
-      className="relative overflow-hidden bg-[#f7f6f0] py-20 text-[#071910] transition-colors dark:bg-[#06180f] dark:text-white"
+      className="relative overflow-hidden bg-[#F4F5F8] py-20 text-[#1B1F3B] transition-colors dark:bg-[#0B0E1E] dark:text-white"
     >
       <div className="mx-auto w-full max-w-[84rem] px-5 sm:px-8">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
             <Reveal direction="down" distance={10}>
-              <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100/80 px-3.5 py-1 text-xs font-semibold text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300">
-                <span className="size-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#E2E4FA] px-3.5 py-1 text-xs font-bold text-[#1B1F3B] dark:bg-[#7C5DFA]/20 dark:text-[#E2E4FA]">
+                <span className="size-1.5 rounded-full bg-[#7C5DFA]" />
                 <span>CERTIFICATIONS</span>
               </div>
             </Reveal>
 
             <Reveal direction="up" delay={0.1}>
-              <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-[#0a1e12] dark:text-white sm:text-3xl lg:text-4xl">
+              <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-[#1B1F3B] dark:text-white sm:text-3xl lg:text-4xl">
                 Professional Certifications
               </h2>
             </Reveal>
 
             <Reveal direction="up" delay={0.15}>
-              <p className="mt-2 text-xs text-stone-600 dark:text-emerald-100/70 sm:text-sm">
+              <p className="mt-2 text-xs text-[#374151] dark:text-[#D1D5DB] sm:text-sm">
                 Swipe to spin the ring. Tap the front card to see the credential.
               </p>
             </Reveal>
@@ -357,7 +378,7 @@ export function CertificationsSection(): React.JSX.Element {
             <div
               role="group"
               aria-label="Ring mode"
-              className="inline-flex gap-1 rounded-full border border-stone-200 bg-white p-1 dark:border-emerald-500/25 dark:bg-[#071d12]"
+              className="inline-flex gap-1 rounded-full border border-[#E2E4EB] bg-[#FFFFFF] p-1 dark:border-[#2A305A] dark:bg-[#151934]"
             >
               {(
                 [
@@ -372,8 +393,8 @@ export function CertificationsSection(): React.JSX.Element {
                   onClick={() => setMode(value)}
                   className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
                     mode === value
-                      ? 'bg-emerald-600 text-white dark:bg-emerald-500 dark:text-[#06231f]'
-                      : 'text-stone-500 hover:text-stone-800 dark:text-emerald-100/60 dark:hover:text-white'
+                      ? 'bg-[#7C5DFA] text-white shadow-sm'
+                      : 'text-[#374151] hover:text-[#1B1F3B] dark:text-slate-400 dark:hover:text-white'
                   }`}
                 >
                   {label}
@@ -410,7 +431,7 @@ export function CertificationsSection(): React.JSX.Element {
                 onClick={() => onCardClick(i)}
                 className={`${faceClass} absolute inset-0 transition-[border-color,box-shadow] duration-300 ${
                   i === ring.front
-                    ? 'border-emerald-500/70 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.5),0_0_44px_-14px_rgba(52,211,153,0.9)] dark:border-emerald-400/70'
+                    ? 'border-[#7C5DFA] shadow-[0_20px_45px_-15px_rgba(124,93,250,0.35)] dark:border-[#9277FF]'
                     : ''
                 } ${hiddenIndex === i ? 'invisible' : ''}`}
               >
@@ -418,11 +439,10 @@ export function CertificationsSection(): React.JSX.Element {
               </button>
             ))}
           </div>
-          <div className="pointer-events-none absolute bottom-4 left-1/2 h-11 w-[min(70%,520px)] -translate-x-1/2 rounded-full bg-emerald-400/30 blur-xl dark:bg-emerald-400/25" />
+          <div className="pointer-events-none absolute bottom-4 left-1/2 h-11 w-[min(70%,520px)] -translate-x-1/2 rounded-full bg-[#7C5DFA]/15 blur-xl dark:bg-[#7C5DFA]/20" />
         </div>
 
-        {/* Arrows sit beside the dots, under the ring, so they stay in view
-            with the ring on short phone screens. */}
+        {/* Arrows sit beside the dots */}
         <div className="mt-2 flex items-center justify-center gap-3 sm:gap-4">
           <button
             type="button"
@@ -442,8 +462,8 @@ export function CertificationsSection(): React.JSX.Element {
                 aria-current={i === ring.front}
                 className={`h-2 rounded-full transition-all duration-300 ${
                   i === ring.front
-                    ? 'w-6 bg-emerald-600 dark:bg-emerald-400'
-                    : 'w-2 bg-stone-300 hover:bg-stone-400 dark:bg-emerald-900 dark:hover:bg-emerald-700'
+                    ? 'w-6 bg-[#7C5DFA]'
+                    : 'w-2 bg-[#E2E4EB] hover:bg-[#CBD5E1] dark:bg-[#2A305A] dark:hover:bg-[#3D467D]'
                 }`}
               />
             ))}
@@ -457,18 +477,17 @@ export function CertificationsSection(): React.JSX.Element {
             <ChevronRight size={18} />
           </button>
         </div>
-        <p className="mt-3 min-h-5 text-center text-xs text-stone-500 dark:text-emerald-100/60" aria-live="polite">
+        <p className="mt-3 min-h-5 text-center text-xs text-[#374151] dark:text-[#D1D5DB]" aria-live="polite">
           {frontCert ? (
             <>
-              <span className="font-semibold text-[#0a1e12] dark:text-white">{frontCert.title}</span> · {frontCert.issuer}
+              <span className="font-semibold text-[#1B1F3B] dark:text-white">{frontCert.title}</span> · {frontCert.issuer}
             </>
           ) : null}
         </p>
       </div>
 
-      {/* Flip view: a copy of the tapped card flies from its spot on the ring
-          to the centre and turns over to show the credential details. */}
-      <AnimatePresence onExitComplete={() => setHiddenIndex(null)}>
+      {/* Flip view modal */}
+      <AnimatePresence onExitComplete={handleExitComplete}>
         {open && openCert ? (
           <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
             <motion.div
@@ -476,7 +495,7 @@ export function CertificationsSection(): React.JSX.Element {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setOpen(null)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+              className="absolute inset-0 bg-[#1B1F3B]/60 backdrop-blur-md dark:bg-black/75"
             />
             <motion.div
               initial={open.from}
@@ -504,33 +523,34 @@ export function CertificationsSection(): React.JSX.Element {
                   className={`${faceClass} absolute inset-0 overflow-y-auto [backface-visibility:hidden] [transform:rotateY(180deg)]`}
                 >
                   <button
+                    ref={closeButtonRef}
                     type="button"
                     onClick={() => setOpen(null)}
                     aria-label="Close"
-                    className="absolute right-4 top-4 grid size-8 place-items-center rounded-full border border-stone-200 text-stone-500 hover:text-stone-900 dark:border-emerald-500/25 dark:text-emerald-100/70 dark:hover:text-white"
+                    className="absolute right-4 top-4 grid size-8 place-items-center rounded-full border border-[#E2E4EB] text-[#374151] hover:text-[#1B1F3B] dark:border-[#2A305A] dark:text-slate-400 dark:hover:text-white"
                   >
                     <X size={16} />
                   </button>
-                  <span className="self-start rounded-full bg-emerald-100 px-2.5 py-0.5 text-[0.6875rem] font-bold text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300">
+                  <span className="self-start rounded-full bg-[#E2E4FA] px-2.5 py-0.5 text-[0.6875rem] font-bold text-[#1B1F3B] dark:bg-[#7C5DFA]/20 dark:text-[#E2E4FA]">
                     {KIND_LABEL[openCert.kind]}
                   </span>
-                  <h3 className="mt-3 pr-8 font-display text-lg font-bold leading-snug text-[#0a1e12] dark:text-white">
+                  <h3 className="mt-3 pr-8 font-display text-lg font-bold leading-snug text-[#1B1F3B] dark:text-white">
                     {openCert.title}
                   </h3>
-                  <p className="mt-1 text-sm text-stone-500 dark:text-emerald-100/60">{openCert.issuer}</p>
+                  <p className="mt-1 text-sm text-[#4A3E8C] dark:text-[#9277FF]">{openCert.issuer}</p>
                   {openCert.detail ? (
-                    <p className="mt-3 text-sm leading-relaxed text-stone-600 dark:text-emerald-100/80">{openCert.detail}</p>
+                    <p className="mt-3 text-sm leading-relaxed text-[#374151] dark:text-[#D1D5DB]">{openCert.detail}</p>
                   ) : null}
 
                   <dl className="mt-4 text-xs">
-                    <div className="flex justify-between border-t border-stone-200 py-2.5 dark:border-emerald-500/20">
-                      <dt className="text-stone-500 dark:text-emerald-100/60">Issued</dt>
-                      <dd className="font-semibold">{openCert.issued}</dd>
+                    <div className="flex justify-between border-t border-[#E2E4EB] py-2.5 dark:border-[#2A305A]">
+                      <dt className="text-[#374151] dark:text-slate-400">Issued</dt>
+                      <dd className="font-semibold text-[#1B1F3B] dark:text-white">{openCert.issued}</dd>
                     </div>
                     {openCert.credentialId ? (
-                      <div className="flex justify-between gap-4 border-t border-stone-200 py-2.5 dark:border-emerald-500/20">
-                        <dt className="shrink-0 text-stone-500 dark:text-emerald-100/60">Credential ID</dt>
-                        <dd className="break-all text-right font-mono font-semibold">{openCert.credentialId}</dd>
+                      <div className="flex justify-between gap-4 border-t border-[#E2E4EB] py-2.5 dark:border-[#2A305A]">
+                        <dt className="shrink-0 text-[#374151] dark:text-slate-400">Credential ID</dt>
+                        <dd className="break-all text-right font-mono font-semibold text-[#1B1F3B] dark:text-white">{openCert.credentialId}</dd>
                       </div>
                     ) : null}
                   </dl>
@@ -541,7 +561,7 @@ export function CertificationsSection(): React.JSX.Element {
                         href={openCert.assetUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 px-4 py-2 text-xs font-bold text-[#06231f]"
+                        className="inline-flex items-center gap-1.5 rounded-full bg-[#1B1F3B] px-4 py-2 text-xs font-bold text-white hover:bg-[#4A3E8C] dark:bg-[#7C5DFA] dark:hover:bg-[#9277FF]"
                       >
                         <FileText size={13} /> View certificate
                       </a>
@@ -551,7 +571,7 @@ export function CertificationsSection(): React.JSX.Element {
                         href={openCert.verifyUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 px-4 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/60"
+                        className="inline-flex items-center gap-1.5 rounded-full border border-[#E2E4EB] px-4 py-2 text-xs font-bold text-[#1B1F3B] hover:border-[#7C5DFA] hover:text-[#7C5DFA] dark:border-[#2A305A] dark:text-[#E2E4FA]"
                       >
                         Verify <ExternalLink size={12} />
                       </a>

@@ -1,6 +1,7 @@
 import { type ReactNode, useMemo } from 'react';
 import { motion, type Variants } from 'motion/react';
 import { useReducedMotion } from '@/hooks/useInteractions';
+import { usePageRevealed } from '@/hooks/usePageRevealed';
 import { cn } from '@/lib/utils';
 
 export type RevealDirection = 'up' | 'down' | 'left' | 'right' | 'none';
@@ -16,6 +17,11 @@ export interface RevealProps {
   readonly distance?: number;
   /** Replay the animation every time it re-enters the viewport. */
   readonly repeat?: boolean;
+  /**
+   * For above-the-fold content: animate when the preloader reveals the page
+   * instead of on viewport entry (which fires while it's still covered).
+   */
+  readonly afterReveal?: boolean;
   readonly as?: 'div' | 'section' | 'li' | 'span' | 'article';
 }
 
@@ -42,9 +48,11 @@ export function Reveal({
   duration = 0.75,
   distance = 26,
   repeat = false,
+  afterReveal = false,
   as = 'div',
 }: RevealProps): React.JSX.Element {
   const reduceMotion = useReducedMotion();
+  const revealed = usePageRevealed();
   const MotionTag = motion[as];
 
   const variants = useMemo<Variants>(() => {
@@ -73,6 +81,19 @@ export function Reveal({
   if (reduceMotion) {
     const Tag = as;
     return <Tag className={className}>{children}</Tag>;
+  }
+
+  if (afterReveal) {
+    return (
+      <MotionTag
+        className={cn(className)}
+        variants={variants}
+        initial="hidden"
+        animate={revealed ? 'visible' : 'hidden'}
+      >
+        {children}
+      </MotionTag>
+    );
   }
 
   return (

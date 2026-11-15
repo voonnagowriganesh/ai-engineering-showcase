@@ -1,81 +1,81 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { ArrowRight, CheckCircle2, ExternalLink, X } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, CheckCircle2, ExternalLink, X } from 'lucide-react';
 import { projects } from '@/data/profile';
 import { useScrollLock } from '@/hooks/useScroll';
-import { useReducedMotion } from '@/hooks/useInteractions';
+import { useEscapeKey, useReducedMotion } from '@/hooks/useInteractions';
 import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/primitives';
+import { track } from '@/lib/analytics';
 import type { Project } from '@/domain/models';
 
-function getTagStyle(category: string): string {
-  switch (category) {
-    case 'AI Product':
-      return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border-emerald-500/30';
-    case 'AI Engineering':
-      return 'bg-sky-100 text-sky-800 dark:bg-sky-950/70 dark:text-sky-300 border-sky-500/30';
-    case 'Agentic AI':
-    case 'Automation':
-      return 'bg-purple-100 text-purple-800 dark:bg-purple-950/70 dark:text-purple-300 border-purple-500/30';
-    case 'Full-Stack':
-      return 'bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 border-amber-500/30';
-    case 'AI / RAG':
-    case 'ML / Data':
-      return 'bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 border-amber-500/30';
-    case 'Computer Vision':
-      return 'bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-950/70 dark:text-fuchsia-300 border-fuchsia-500/30';
-    default:
-      return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border-emerald-500/30';
-  }
+function getTagStyle(_category: string): string {
+  return 'bg-[#E2E4FA] text-[#4A3E8C] dark:bg-[#7C5DFA]/20 dark:text-[#E2E4FA]';
 }
 
 interface ProjectCardButtonProps {
   readonly project: Project;
   readonly index: number;
   readonly onOpen: () => void;
-  /** True inside the sticky stack, where a scroll-reveal transform on the
-   * card would fight the sticky positioning. */
   readonly inStage?: boolean;
 }
 
+/** Stack chips shown on the card; the rest collapse into a "+N" chip. */
+const VISIBLE_STACK = 4;
+
 function ProjectCardButton({ project, index, onOpen, inStage }: ProjectCardButtonProps): React.JSX.Element {
+  const extra = project.stack.length - VISIBLE_STACK;
   const card = (
     <button
       type="button"
       onClick={onOpen}
-      className="group flex w-full flex-col gap-5 overflow-hidden rounded-3xl border border-stone-200/80 bg-white p-6 text-left shadow-xl transition-colors duration-300 hover:border-emerald-500/40 dark:border-emerald-500/20 dark:bg-[#0b2115] sm:flex-row sm:items-center sm:gap-9 sm:p-9"
+      className="group flex w-full flex-col gap-4 overflow-hidden rounded-[1.75rem] border border-[#E2E4EB] bg-[#FFFFFF] p-5 text-left shadow-[0_1px_2px_rgba(27,31,59,0.04),0_12px_32px_-12px_rgba(27,31,59,0.14)] transition-[border-color,box-shadow] duration-300 hover:border-[#7C5DFA]/50 hover:shadow-[0_1px_2px_rgba(27,31,59,0.04),0_20px_44px_-14px_rgba(124,93,250,0.28)] dark:border-[#2A305A] dark:bg-[#151934] dark:shadow-[0_12px_32px_-12px_rgba(0,0,0,0.55)] sm:flex-row sm:items-center sm:gap-6 sm:p-6"
     >
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-3">
-          <span className="font-mono text-xs text-stone-400 dark:text-emerald-500/60">0{index + 1}</span>
-          <span
-            className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[0.6875rem] font-bold ${getTagStyle(
-              project.category,
-            )}`}
-          >
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
+          <span className="font-mono tracking-[0.15em] text-[#6B7280] dark:text-[#9EA5C0]">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+          <span className={`rounded-full px-3 py-1 font-semibold ${getTagStyle(project.category)}`}>
             {project.category}
           </span>
+          <span className="font-mono tracking-[0.15em] text-[#6B7280] dark:text-[#9EA5C0]">{project.year}</span>
         </div>
 
-        <h3 className="mt-4 font-display text-2xl font-bold leading-snug text-[#0a1e12] group-hover:text-emerald-700 dark:text-white dark:group-hover:text-emerald-300 sm:text-3xl lg:text-4xl">
+        <h3 className="mt-3 font-display text-lg font-bold leading-snug text-[#4A3E8C] transition-colors group-hover:text-[#7C5DFA] dark:text-[#B9A8FF] dark:group-hover:text-white sm:text-xl">
           {project.title}
         </h3>
-
-        <p className="mt-3 max-w-xl text-sm leading-relaxed text-stone-600 dark:text-emerald-100/70 sm:text-base">
+        <p className="mt-2 max-w-xl text-sm leading-relaxed text-[#374151] dark:text-[#D1D5DB]">
           {project.subtitle}
         </p>
 
-        <div className="mt-6 flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
-          <span>View details</span>
-          <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {project.stack.slice(0, VISIBLE_STACK).map((item) => (
+            <span
+              key={item}
+              className="rounded-full bg-[#F4F5F8] px-2.5 py-1 text-[0.6875rem] font-medium text-[#374151] dark:bg-[#1D2245] dark:text-[#D1D5DB]"
+            >
+              {item}
+            </span>
+          ))}
+          {extra > 0 ? (
+            <span className="rounded-full bg-[#F4F5F8] px-2.5 py-1 text-[0.6875rem] font-medium text-[#6B7280] dark:bg-[#1D2245] dark:text-[#9EA5C0]">
+              +{extra}
+            </span>
+          ) : null}
+        </div>
+
+        <div className="mt-4 flex items-center gap-1.5 text-sm font-semibold text-[#7C5DFA] dark:text-[#9277FF]">
+          View case study
+          <ArrowUpRight
+            size={15}
+            className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+          />
         </div>
       </div>
 
-      {/* Real artwork where supplied; otherwise a generative panel derived
-          from the project's own palette, so no card depends on a
-          generated image that might bake in text of its own. */}
       <div
-        className="relative h-32 w-full shrink-0 overflow-hidden rounded-2xl border border-stone-200/80 dark:border-emerald-500/30 sm:w-72"
+        className="relative h-40 w-full shrink-0 overflow-hidden rounded-2xl border border-[#E2E4EB] bg-[#F4F5F8] dark:border-[#2A305A] dark:bg-[#1D2245] sm:h-36 sm:w-60"
         style={
           project.image
             ? undefined
@@ -85,39 +85,45 @@ function ProjectCardButton({ project, index, onOpen, inStage }: ProjectCardButto
         {project.image ? (
           <img
             src={project.image}
-            alt={project.title}
+            alt=""
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
           />
         ) : (
-          <span className="grid size-12 place-items-center rounded-2xl border border-white/25 bg-white/15 text-white backdrop-blur-md transition-transform duration-500 group-hover:-translate-y-1">
-            <Icon icon={project.icon} size={22} />
+          <span className="absolute inset-0 grid place-items-center">
+            <span className="grid size-12 place-items-center rounded-2xl border border-white/25 bg-white/15 text-white backdrop-blur-md">
+              <Icon icon={project.icon} size={22} />
+            </span>
           </span>
         )}
-        <span className="absolute top-3 right-3 rounded-full border border-white/25 bg-black/25 px-2 py-0.5 font-mono text-[0.625rem] text-white backdrop-blur-md">
-          {project.year}
-        </span>
       </div>
     </button>
   );
 
-  // The pinned stage's own entrance is handled by the slide-up-and-cover
-  // transform, not a scroll-reveal fade — Reveal is only useful here in
-  // the static reduced-motion fallback, which has no other entrance.
-  return inStage ? card : <Reveal direction="up" delay={0.06 * index}>{card}</Reveal>;
+  if (inStage) return card;
+
+  return (
+    <Reveal direction="up" delay={0.06 * index}>
+      {card}
+    </Reveal>
+  );
 }
 
 export function FeaturedProjects(): React.JSX.Element {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const reduceMotion = useReducedMotion();
   const listRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Plain `overflow: hidden` on body isn't enough — this site drives scroll
-  // through Lenis (see ScrollService), which scrolls the page via its own
-  // rAF loop regardless of CSS overflow. useScrollLock calls into the same
-  // service the command palette already uses, so Lenis itself is paused
-  // while the modal is open, not just the body's native overflow.
+  const closeProject = useCallback(() => setSelectedProject(null), []);
+  useEscapeKey(selectedProject !== null, closeProject);
   useScrollLock(selectedProject !== null);
+
+  useEffect(() => {
+    if (selectedProject) {
+      closeButtonRef.current?.focus();
+    }
+  }, [selectedProject]);
 
   // The stack itself is plain CSS: every card is `sticky` at the same top,
   // so the first one holds still and each later card scrolls up over it
@@ -138,17 +144,21 @@ export function FeaturedProjects(): React.JSX.Element {
       });
     };
 
-    window.addEventListener('resize', equalise);
     equalise();
-    // Web fonts change text wrapping, so re-measure once they've loaded.
+    window.addEventListener('resize', equalise);
+    // Web fonts and late layout change text wrapping, so re-measure after both.
+    window.addEventListener('load', equalise);
     void document.fonts?.ready.then(equalise);
-    return () => window.removeEventListener('resize', equalise);
+    return () => {
+      window.removeEventListener('resize', equalise);
+      window.removeEventListener('load', equalise);
+    };
   }, [reduceMotion]);
 
   return (
     <section
       id="projects"
-      className="relative bg-[#f7f6f0] py-20 text-[#071910] transition-colors dark:bg-[#06180f] dark:text-white"
+      className="relative bg-[#F4F5F8] py-20 text-[#1B1F3B] transition-colors dark:bg-[#0B0E1E] dark:text-white"
     >
       <div className="mx-auto w-full max-w-[84rem] px-5 sm:px-8">
         {/* Header. overflow-hidden is scoped to just this row (a sibling of
@@ -159,14 +169,14 @@ export function FeaturedProjects(): React.JSX.Element {
         <div className="flex flex-col justify-between gap-4 overflow-hidden sm:flex-row sm:items-end">
           <div>
             <Reveal direction="down" distance={10}>
-              <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100/80 px-3.5 py-1 text-xs font-semibold text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300">
-                <span className="size-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#E2E4FA] px-3.5 py-1 text-xs font-bold text-[#1B1F3B] dark:bg-[#7C5DFA]/20 dark:text-[#E2E4FA]">
+                <span className="size-1.5 rounded-full bg-[#7C5DFA]" />
                 <span>FEATURED PROJECTS</span>
               </div>
             </Reveal>
 
             <Reveal direction="up" delay={0.1}>
-              <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-[#0a1e12] dark:text-white sm:text-3xl lg:text-4xl">
+              <h2 className="mt-3 font-display text-2xl font-extrabold tracking-tight text-[#1B1F3B] sm:text-3xl lg:text-4xl dark:text-white">
                 Real-World Projects & Products
               </h2>
             </Reveal>
@@ -177,7 +187,8 @@ export function FeaturedProjects(): React.JSX.Element {
               href="https://github.com/voonnagowriganesh"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 transition-colors hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
+              onClick={() => track('github-click', { label: 'View All Projects' })}
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#4A3E8C] transition-colors hover:text-[#7C5DFA] dark:text-[#9277FF] dark:hover:text-white"
             >
               <span>View All Projects</span>
               <ArrowRight size={14} />
@@ -189,21 +200,27 @@ export function FeaturedProjects(): React.JSX.Element {
             sticks at the same top, so a later card lands exactly on top of
             the one before and hides it fully. Reduced motion gets the same
             list without the sticky behaviour. */}
-        <div ref={listRef} className="relative mt-16 flex flex-col gap-5">
+        <div ref={listRef} className="relative mt-10 flex flex-col gap-5 sm:mt-12">
           {projects.map((project, index) =>
             reduceMotion ? (
               <ProjectCardButton
                 key={project.id}
                 project={project}
                 index={index}
-                onOpen={() => setSelectedProject(project)}
+                onOpen={() => {
+                  track('project-open', { id: project.id });
+                  setSelectedProject(project);
+                }}
               />
             ) : (
               <div key={project.id} className="sticky top-20 sm:top-24">
                 <ProjectCardButton
                   project={project}
                   index={index}
-                  onOpen={() => setSelectedProject(project)}
+                  onOpen={() => {
+                    track('project-open', { id: project.id });
+                    setSelectedProject(project);
+                  }}
                   inStage
                 />
               </div>
@@ -220,8 +237,8 @@ export function FeaturedProjects(): React.JSX.Element {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setSelectedProject(null)}
-              className="absolute inset-0 bg-black/75 backdrop-blur-md"
+              onClick={closeProject}
+              className="absolute inset-0 bg-[#1B1F3B]/60 backdrop-blur-md dark:bg-black/75"
             />
 
             <motion.div
@@ -229,16 +246,15 @@ export function FeaturedProjects(): React.JSX.Element {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              // Lenis's own wheel handler calls preventDefault() on every
-              // scroll while stopped unless the target carries this
-              // attribute — without it, locking the page for the modal
-              // also silently blocks the modal's own overflow-y-auto.
               data-lenis-prevent
-              className="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-emerald-500/30 bg-[#071910] p-6 text-white shadow-2xl sm:p-8"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="project-dialog-title"
+              className="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-[#E2E4EB] bg-[#FFFFFF] p-6 text-[#1B1F3B] shadow-2xl dark:border-[#2A305A] dark:bg-[#151934] dark:text-white sm:p-8"
             >
-              <div className="flex items-center justify-between pb-4 border-b border-emerald-500/20">
+              <div className="flex items-center justify-between pb-4 border-b border-[#E2E4EB] dark:border-[#2A305A]">
                 <span
-                  className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold ${getTagStyle(
+                  className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold ${getTagStyle(
                     selectedProject.category,
                   )}`}
                 >
@@ -246,16 +262,18 @@ export function FeaturedProjects(): React.JSX.Element {
                 </span>
 
                 <button
+                  ref={closeButtonRef}
                   type="button"
-                  onClick={() => setSelectedProject(null)}
-                  className="rounded-full p-2 text-slate-400 hover:bg-emerald-900/40 hover:text-white"
+                  onClick={closeProject}
+                  aria-label="Close project details"
+                  className="rounded-full p-2 text-[#374151] hover:bg-[#F4F5F8] dark:text-slate-400 dark:hover:bg-[#1D2245]"
                 >
                   <X size={20} />
                 </button>
               </div>
 
               {selectedProject.image ? (
-                <div className="mt-5 overflow-hidden rounded-2xl border border-emerald-500/20">
+                <div className="mt-5 overflow-hidden rounded-2xl border border-[#E2E4EB] dark:border-[#2A305A]">
                   <img
                     src={selectedProject.image}
                     alt={selectedProject.title}
@@ -265,10 +283,10 @@ export function FeaturedProjects(): React.JSX.Element {
               ) : null}
 
               <div className="mt-5">
-                <h3 className="font-display text-2xl font-bold text-white">
+                <h3 id="project-dialog-title" className="font-display text-2xl font-bold text-[#1B1F3B] dark:text-white">
                   {selectedProject.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-300">
+                <p className="mt-2 text-sm leading-relaxed text-[#374151] dark:text-[#D1D5DB]">
                   {selectedProject.summary}
                 </p>
 
@@ -279,9 +297,10 @@ export function FeaturedProjects(): React.JSX.Element {
                       <a
                         key={link.href}
                         href={link.href}
+                        onClick={() => track('github-click', { project: selectedProject.id, label: link.label })}
                         target={link.external ? '_blank' : undefined}
                         rel={link.external ? 'noopener noreferrer' : undefined}
-                        className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-950/50 px-3.5 py-1.5 text-xs font-semibold text-emerald-300 transition-colors hover:border-emerald-400 hover:bg-emerald-500/15 hover:text-white"
+                        className="inline-flex items-center gap-1.5 rounded-full border border-[#E2E4EB] bg-[#F4F5F8] px-3.5 py-1.5 text-xs font-semibold text-[#1B1F3B] transition-colors hover:border-[#7C5DFA] hover:text-[#7C5DFA] dark:border-[#2A305A] dark:bg-[#1D2245] dark:text-[#E2E4FA]"
                       >
                         <span>{link.label}</span>
                         <ExternalLink size={12} />
@@ -296,12 +315,12 @@ export function FeaturedProjects(): React.JSX.Element {
                     {selectedProject.metrics.map((m) => (
                       <div
                         key={m.label}
-                        className="rounded-2xl border border-emerald-500/20 bg-emerald-950/40 p-3 text-center"
+                        className="rounded-2xl border border-[#E2E4EB] bg-[#F4F5F8] p-3 text-center dark:border-[#2A305A] dark:bg-[#1D2245]"
                       >
-                        <span className="font-display block text-xl font-bold text-emerald-400">
+                        <span className="font-display block text-xl font-bold text-[#7C5DFA]">
                           {m.value}
                         </span>
-                        <span className="mt-1 block text-[0.6875rem] text-slate-400">{m.label}</span>
+                        <span className="mt-1 block text-[0.6875rem] text-[#4A3E8C] dark:text-[#9277FF]">{m.label}</span>
                       </div>
                     ))}
                   </div>
@@ -309,13 +328,13 @@ export function FeaturedProjects(): React.JSX.Element {
 
                 {/* Highlights */}
                 <div className="mt-6">
-                  <h4 className="text-xs font-bold tracking-wider text-emerald-400 uppercase">
+                  <h4 className="text-xs font-bold tracking-wider text-[#4A3E8C] uppercase dark:text-[#9277FF]">
                     Key Highlights
                   </h4>
                   <ul className="mt-3 space-y-2">
                     {selectedProject.highlights.map((h) => (
-                      <li key={h} className="flex items-start gap-2.5 text-xs text-slate-200">
-                        <CheckCircle2 size={15} className="mt-0.5 text-emerald-400 shrink-0" />
+                      <li key={h} className="flex items-start gap-2.5 text-xs text-[#374151] dark:text-[#D1D5DB]">
+                        <CheckCircle2 size={15} className="mt-0.5 text-[#7C5DFA] shrink-0" />
                         <span>{h}</span>
                       </li>
                     ))}
@@ -324,14 +343,14 @@ export function FeaturedProjects(): React.JSX.Element {
 
                 {/* Stack */}
                 <div className="mt-6">
-                  <h4 className="text-xs font-bold tracking-wider text-emerald-400 uppercase">
+                  <h4 className="text-xs font-bold tracking-wider text-[#4A3E8C] uppercase dark:text-[#9277FF]">
                     Technologies
                   </h4>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {selectedProject.stack.map((item) => (
                       <span
                         key={item}
-                        className="rounded-lg border border-emerald-500/20 bg-emerald-950/60 px-2.5 py-1 text-xs font-medium text-emerald-200"
+                        className="rounded-lg border border-[#E2E4EB] bg-[#F4F5F8] px-2.5 py-1 text-xs font-medium text-[#1B1F3B] dark:border-[#2A305A] dark:bg-[#1D2245] dark:text-[#E2E4FA]"
                       >
                         {item}
                       </span>

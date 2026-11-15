@@ -53,7 +53,12 @@ export function Preloader({ progress, complete }: PreloaderProps): React.JSX.Ele
       {visible ? (
         <motion.div
           key="preloader"
-          className="fixed inset-0 z-[200] flex items-center justify-center overflow-hidden bg-canvas"
+          // pointer-events-none once complete: the overlay stays mounted (transparent)
+          // while its exit plays, and must not swallow clicks on the revealed page.
+          className={cn(
+            'fixed inset-0 z-[200] flex items-center justify-center overflow-hidden bg-canvas',
+            complete && 'pointer-events-none',
+          )}
           initial={false}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.3, delay: 0.55 } }}

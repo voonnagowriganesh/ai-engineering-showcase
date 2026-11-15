@@ -94,20 +94,29 @@ export function usePageLoad({
 
     /* ── Easing loop ──────────────────────────────────────────────────── */
     let eased = 0;
+    let lastTick = performance.now();
 
     const tick = (): void => {
       if (cancelled) return;
 
-      const elapsed = performance.now() - startedAtRef.current;
-      const target = computeTarget();
-
-      eased += (target - eased) * 0.08;
+      const now = performance.now();
+      // Time-based easing: on a slow device with few frames, a per-frame
+      // factor left the counter far behind and it then jumped straight to 100.
+      const dt = Math.min(100, now - lastTick);
+      lastTick = now;
+      const elapsed = now - startedAtRef.current;
 
       const timedOut = elapsed >= maximumDurationMs;
       const everythingReady = documentReady && fontsReady && imagesReady;
       const minimumMet = elapsed >= minimumDurationMs;
+      const finishing = (everythingReady && minimumMet) || timedOut;
 
-      if ((everythingReady && minimumMet) || timedOut) {
+      // Once done, count up quickly but visibly to 100 instead of snapping.
+      const target = finishing ? 1 : computeTarget();
+      const rate = finishing ? 0.2 : 0.08;
+      eased += (target - eased) * (1 - (1 - rate) ** (dt / (1000 / 60)));
+
+      if (finishing && eased >= 0.995) {
         setProgress(100);
         // One frame at 100% before handing over, so the number is actually seen.
         window.setTimeout(() => {
