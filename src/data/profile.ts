@@ -689,15 +689,14 @@ export const stackIcons: Readonly<Record<string, IconComponent>> = {
 };
 
 /* ══════════════════════════════════════════════════════════════════════════
-   CASE STUDY: JOB SCRAPER & MARKET INTELLIGENCE PLATFORM
+   CASE STUDY: VOICE AI AGENT SYSTEM
    ══════════════════════════════════════════════════════════════════════════ */
 
 export const featuredCaseStudy = {
   title: 'Voice AI Agent System',
   subtitle:
     'A real-time, voice-driven multi-agent system built on FastAPI, LangGraph and Gemini — retrieval-grounded reasoning across specialised agents, speech in to speech out.',
-  cubeImage: '/images/isometric_cube.png',
-  laptopImage: '/images/case_study_laptop.png',
+  image: '/images/project-voice-ai-system.jpg',
   githubUrl: 'https://github.com/voonnagowriganesh/voice-agent',
   metrics: [
     { value: '<2s', label: 'Voice Latency' },

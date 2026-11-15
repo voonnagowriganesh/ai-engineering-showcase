@@ -64,15 +64,15 @@ export function CaseStudySection(): React.JSX.Element {
           </div>
 
           {/* ══════════════════════════════════════════════════════════════════
-              CENTER: LAPTOP MOCKUP DASHBOARD (5 cols)
+              CENTER: PROJECT ARTWORK (5 cols)
               ══════════════════════════════════════════════════════════════════ */}
           <div className="relative flex justify-center lg:col-span-5">
             <Reveal direction="up" delay={0.2}>
               <div className="relative mx-auto w-full max-w-md sm:max-w-lg">
                 <div className="relative overflow-hidden rounded-3xl border border-[#E2E4EB] bg-[#FFFFFF] p-2 shadow-[0_20px_50px_-15px_rgba(27,31,59,0.08)] transition-transform duration-500 hover:scale-[1.02] dark:border-[#2A305A] dark:bg-[#151934]">
                   <img
-                    src={featuredCaseStudy.laptopImage}
-                    alt="Job Scraper & Intelligence Platform Dashboard"
+                    src={featuredCaseStudy.image}
+                    alt={`${featuredCaseStudy.title}: voice in, multi-agent reasoning, voice out`}
                     className="h-auto w-full rounded-2xl object-contain"
                     loading="lazy"
                   />
@@ -83,7 +83,7 @@ export function CaseStudySection(): React.JSX.Element {
           </div>
 
           {/* ══════════════════════════════════════════════════════════════════
-              RIGHT: KEY HIGHLIGHTS & ISOMETRIC CUBE (3 cols)
+              RIGHT: KEY HIGHLIGHTS (3 cols)
               ══════════════════════════════════════════════════════════════════ */}
           <div className="flex flex-col gap-4 lg:col-span-3">
             <Reveal direction="left" delay={0.25}>
