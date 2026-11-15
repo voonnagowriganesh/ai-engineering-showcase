@@ -8,13 +8,6 @@ import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/primitives';
 import type { Project } from '@/domain/models';
 
-/** Scroll distance, in vh, dedicated to each card's slide-up-and-cover
- * transition. Smaller = faster to scroll through, larger = slower/more
- * deliberate. */
-const STAGE_VH_PER_CARD = 70;
-/** Must match the `top-24` (6rem) on the pinned frame below. */
-const FRAME_TOP_OFFSET_PX = 96;
-
 function getTagStyle(category: string): string {
   switch (category) {
     case 'AI Product':
@@ -40,19 +33,17 @@ interface ProjectCardButtonProps {
   readonly project: Project;
   readonly index: number;
   readonly onOpen: () => void;
-  /** True inside the pinned stage, where the card must fill its absolutely
-   * positioned parent instead of sizing to its own content. */
-  readonly fill?: boolean;
+  /** True inside the sticky stack, where a scroll-reveal transform on the
+   * card would fight the sticky positioning. */
+  readonly inStage?: boolean;
 }
 
-function ProjectCardButton({ project, index, onOpen, fill }: ProjectCardButtonProps): React.JSX.Element {
+function ProjectCardButton({ project, index, onOpen, inStage }: ProjectCardButtonProps): React.JSX.Element {
   const card = (
     <button
       type="button"
       onClick={onOpen}
-      className={`group flex w-full flex-col gap-5 overflow-hidden rounded-3xl border border-stone-200/80 bg-white p-6 text-left shadow-xl transition-colors duration-300 hover:border-emerald-500/40 dark:border-emerald-500/20 dark:bg-[#0b2115] sm:flex-row sm:items-center sm:gap-9 sm:p-9 ${
-        fill ? 'h-full' : ''
-      }`}
+      className="group flex w-full flex-col gap-5 overflow-hidden rounded-3xl border border-stone-200/80 bg-white p-6 text-left shadow-xl transition-colors duration-300 hover:border-emerald-500/40 dark:border-emerald-500/20 dark:bg-[#0b2115] sm:flex-row sm:items-center sm:gap-9 sm:p-9"
     >
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-3">
@@ -84,7 +75,7 @@ function ProjectCardButton({ project, index, onOpen, fill }: ProjectCardButtonPr
           from the project's own palette, so no card depends on a
           generated image that might bake in text of its own. */}
       <div
-        className="relative h-40 w-full shrink-0 overflow-hidden rounded-2xl border border-stone-200/80 dark:border-emerald-500/30 sm:h-full sm:w-72"
+        className="relative h-32 w-full shrink-0 overflow-hidden rounded-2xl border border-stone-200/80 dark:border-emerald-500/30 sm:w-72"
         style={
           project.image
             ? undefined
@@ -113,15 +104,13 @@ function ProjectCardButton({ project, index, onOpen, fill }: ProjectCardButtonPr
   // The pinned stage's own entrance is handled by the slide-up-and-cover
   // transform, not a scroll-reveal fade — Reveal is only useful here in
   // the static reduced-motion fallback, which has no other entrance.
-  return fill ? card : <Reveal direction="up" delay={0.06 * index}>{card}</Reveal>;
+  return inStage ? card : <Reveal direction="up" delay={0.06 * index}>{card}</Reveal>;
 }
 
 export function FeaturedProjects(): React.JSX.Element {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const reduceMotion = useReducedMotion();
-  const stageRef = useRef<HTMLDivElement>(null);
-  const frameRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const listRef = useRef<HTMLDivElement>(null);
 
   // Plain `overflow: hidden` on body isn't enough — this site drives scroll
   // through Lenis (see ScrollService), which scrolls the page via its own
@@ -130,59 +119,30 @@ export function FeaturedProjects(): React.JSX.Element {
   // while the modal is open, not just the body's native overflow.
   useScrollLock(selectedProject !== null);
 
-  // The stack: the first card sits still in a pinned frame; as you scroll,
-  // each next card slides up from below and fully covers whatever's
-  // currently on top, then holds there (doesn't keep moving) until the
-  // card after it arrives to cover IT. Scrolling back up reverses the same
-  // motion smoothly, because this is driven purely by current scroll
-  // position, not by a one-shot animation triggered on an event.
-  //
-  // Mechanically: `stage` is a tall spacer (`(N-1) * 70vh` of extra scroll
-  // room beyond one frame height); `frame` is the pinned viewport the user
-  // actually sees; each card is absolutely positioned to fill the frame
-  // and translated by a 0-100% offset computed from how far scroll has
-  // progressed through the stage. This reads scroll position — it never
-  // sets it or calls preventDefault — so there's nothing here for Lenis to
-  // fight over, same reasoning as every other scroll-linked effect in this
-  // codebase.
+  // The stack itself is plain CSS: every card is `sticky` at the same top,
+  // so the first one holds still and each later card scrolls up over it
+  // and covers it completely; scrolling back up reverses it. This only
+  // equalises card heights — a shorter card arriving on top of a taller
+  // one would otherwise leave the taller one's bottom edge showing.
   useEffect(() => {
     if (reduceMotion) return undefined;
 
-    let ticking = false;
-    const update = (): void => {
-      const stage = stageRef.current;
-      const frame = frameRef.current;
-      if (!stage || !frame) {
-        ticking = false;
-        return;
-      }
-      const scrollableDistance = Math.max(1, stage.offsetHeight - frame.offsetHeight);
-      const effectiveTop = stage.getBoundingClientRect().top - FRAME_TOP_OFFSET_PX;
-      const progress = Math.max(0, Math.min(1, -effectiveTop / scrollableDistance));
-      const virtualIndex = progress * (projects.length - 1);
-      const activeIndex = Math.min(projects.length - 1, Math.round(virtualIndex));
-
-      cardRefs.current.forEach((card, index) => {
-        if (!card) return;
-        const t = Math.max(0, Math.min(1, index - virtualIndex));
-        card.style.transform = `translateY(${(t * 100).toFixed(2)}%)`;
-        card.style.pointerEvents = index === activeIndex ? 'auto' : 'none';
+    const equalise = (): void => {
+      const buttons = Array.from(listRef.current?.querySelectorAll<HTMLElement>('button') ?? []);
+      buttons.forEach((btn) => {
+        btn.style.minHeight = '';
       });
-      ticking = false;
-    };
-    const onScroll = (): void => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(update);
+      const tallest = Math.max(0, ...buttons.map((btn) => btn.offsetHeight));
+      buttons.forEach((btn) => {
+        btn.style.minHeight = `${tallest}px`;
+      });
     };
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    update();
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-    };
+    window.addEventListener('resize', equalise);
+    equalise();
+    // Web fonts change text wrapping, so re-measure once they've loaded.
+    void document.fonts?.ready.then(equalise);
+    return () => window.removeEventListener('resize', equalise);
   }, [reduceMotion]);
 
   return (
@@ -225,65 +185,31 @@ export function FeaturedProjects(): React.JSX.Element {
           </Reveal>
         </div>
 
-        {/* Cards that stack as you scroll: each one sticks in place while
-            the next slides up and settles just below it, so you see a deck
-            build up rather than one card replacing the last. Read-only
-            scroll position drives the depth-blur effect above; the sticky
-            behaviour itself is plain CSS, independent of Lenis entirely.
-
-            Earlier versions here tried to get a "deck" look out of several
-            individually-sticky cards with staggered offsets — that was
-            the wrong mechanic for what was actually being asked for: the
-            FIRST card fixed in place, with each later card fully covering
-            whatever's currently visible as it arrives, not several cards
-            partially overlapping with slivers of earlier ones still
-            showing. That needs one pinned frame plus absolutely-positioned
-            cards translated by a scroll-driven percentage (see the effect
-            above), not N independent sticky elements.
-
-            Reduced motion gets a different, simpler render entirely
-            (below): a plain stacked list, everything in normal document
-            flow, no scroll-driven positioning at all — that's a deliberate
-            fallback, not a shortcut, since the pin-and-cover motion is the
-            entire point of this effect for everyone else. */}
-        {reduceMotion ? (
-          <div className="relative mt-16 flex flex-col gap-5">
-            {projects.map((project, index) => (
+        {/* All cards share one parent so their sticky windows overlap; each
+            sticks at the same top, so a later card lands exactly on top of
+            the one before and hides it fully. Reduced motion gets the same
+            list without the sticky behaviour. */}
+        <div ref={listRef} className="relative mt-16 flex flex-col gap-5">
+          {projects.map((project, index) =>
+            reduceMotion ? (
               <ProjectCardButton
                 key={project.id}
                 project={project}
                 index={index}
                 onOpen={() => setSelectedProject(project)}
               />
-            ))}
-          </div>
-        ) : (
-          <div
-            ref={stageRef}
-            className="relative mt-16"
-            style={{ height: `calc(75vh + ${(projects.length - 1) * STAGE_VH_PER_CARD}vh)` }}
-          >
-            <div ref={frameRef} className="sticky top-24 h-[75vh] overflow-hidden rounded-3xl">
-              {projects.map((project, index) => (
-                <div
-                  key={project.id}
-                  ref={(el) => {
-                    cardRefs.current[index] = el;
-                  }}
-                  className="absolute inset-0"
-                  style={{ zIndex: index, willChange: 'transform' }}
-                >
-                  <ProjectCardButton
-                    project={project}
-                    index={index}
-                    onOpen={() => setSelectedProject(project)}
-                    fill
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+            ) : (
+              <div key={project.id} className="sticky top-20 sm:top-24">
+                <ProjectCardButton
+                  project={project}
+                  index={index}
+                  onOpen={() => setSelectedProject(project)}
+                  inStage
+                />
+              </div>
+            ),
+          )}
+        </div>
       </div>
 
       {/* Detail Modal */}
