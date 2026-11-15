@@ -5,11 +5,13 @@ import { BackgroundArt } from './BackgroundArt';
 import { useTilt } from '../hooks/useTilt';
 import { useCountUp } from '../hooks/useCountUp';
 
+// Corners only: the portrait carries its own "AI" and "</>" badges at the
+// left-middle and right-middle edges, so these stay clear of them.
 const floatingBadges = [
-  { label: 'LLMs', icon: Brain, pos: 'top-6 -left-6 sm:left-2', delay: 0 },
-  { label: 'RAG', icon: Layers, pos: 'top-24 -right-8 sm:right-0', delay: 0.4 },
-  { label: 'AI Agents', icon: Bot, pos: 'bottom-28 -left-10 sm:-left-4', delay: 0.8 },
-  { label: 'Product Dev', icon: Code2, pos: 'bottom-4 right-2', delay: 1.2 },
+  { label: 'LLMs', icon: Brain, pos: 'top-3 -left-2 sm:top-4 sm:-left-4', delay: 0 },
+  { label: 'RAG', icon: Layers, pos: 'top-3 -right-2 sm:top-4 sm:-right-4', delay: 0.4 },
+  { label: 'AI Agents', icon: Bot, pos: 'bottom-3 -left-2 sm:bottom-4 sm:-left-4', delay: 0.8 },
+  { label: 'Product Dev', icon: Code2, pos: 'bottom-3 -right-2 sm:bottom-4 sm:-right-4', delay: 1.2 },
 ];
 
 function Metric({ countTo, suffix, label }: (typeof headlineMetrics)[number]) {
@@ -114,7 +116,7 @@ export function Hero() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative mx-auto hidden h-[26rem] w-[26rem] max-w-full [perspective:1200px] sm:block lg:h-[30rem] lg:w-[30rem]"
+          className="relative mx-auto aspect-square w-full max-w-[20rem] [perspective:1200px] sm:h-[26rem] sm:w-[26rem] sm:max-w-full lg:h-[30rem] lg:w-[30rem]"
         >
           <div
             ref={tilt.ref}
@@ -127,15 +129,20 @@ export function Hero() {
             className="relative h-full w-full rounded-[2.5rem] border border-white/40 bg-gradient-to-br from-white/70 to-white/20 shadow-card backdrop-blur-sm transition-transform duration-150 ease-out"
           >
             <div
-              className="absolute inset-6 rounded-[2rem] bg-gradient-to-br from-signal via-signal-light to-amber opacity-90"
-              style={{ transform: 'translateZ(20px)' }}
-            />
-            <div
-              className="absolute inset-6 flex flex-col items-center justify-center rounded-[2rem] text-center text-paper"
-              style={{ transform: 'translateZ(40px)' }}
+              className="absolute inset-4 overflow-hidden rounded-[1.75rem] sm:inset-6 sm:rounded-[2rem]"
+              style={{ transform: 'translateZ(30px)' }}
             >
-              <span className="font-display text-7xl font-semibold">{identity.initials}</span>
-              <span className="label-mono mt-3 text-xs text-paper/80">AI DEVELOPER</span>
+              <img
+                src="/images/profile-960.webp"
+                srcSet="/images/profile-480.webp 480w, /images/profile-960.webp 960w"
+                sizes="(min-width: 1024px) 27rem, (min-width: 640px) 23rem, 18rem"
+                width={960}
+                height={960}
+                alt={identity.name}
+                fetchPriority="high"
+                decoding="async"
+                className="h-full w-full object-cover"
+              />
             </div>
 
             {floatingBadges.map((badge) => (
