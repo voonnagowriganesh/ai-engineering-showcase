@@ -911,6 +911,7 @@ export const education: readonly Education[] = [
     institution: 'Gowtham E.M High School',
     period: '2018',
     location: 'Vijayawada, Andhra Pradesh',
+    cgpa: '9.0',
   },
 ];
 
