@@ -25,6 +25,7 @@ import type {
   Metric,
   NavItem,
   Project,
+  Service,
   SkillDomain,
   Strength,
 } from '../types';
@@ -47,6 +48,8 @@ export const identity: Identity = {
   linkedin: 'https://www.linkedin.com/in/voonna-gowri-ganesh',
   medium: 'https://medium.com/@voonnagowriganesh',
   availability: 'AI Developer @ Techgene Solutions',
+  resumeUrl: '/resume/VOONNA_GOWRI_GANESH_AI_DEVELOPER.pdf',
+  resumeFileName: 'VOONNA_GOWRI_GANESH_AI_DEVELOPER.pdf',
 };
 
 export const navItems: readonly NavItem[] = [
@@ -100,6 +103,8 @@ export const experiences: readonly Experience[] = [
     ],
     stack: ['Python', 'FastAPI', 'React', 'TypeScript', 'LangGraph', 'PostgreSQL', 'Docker'],
     accent: ['#4338CA', '#8B7CF6'],
+    logo: '/company_logos/techgene_solutions.png',
+    confidential: true,
   },
   {
     id: 'zennial-pro',
@@ -119,6 +124,7 @@ export const experiences: readonly Experience[] = [
     ],
     stack: ['Python', 'FastAPI', 'REST APIs', 'Microservices', 'PostgreSQL', 'LangChain'],
     accent: ['#2F7A64', '#6FC2A4'],
+    logo: '/company_logos/zennial_pro.jpg',
   },
   {
     id: 'flipkart',
@@ -136,6 +142,7 @@ export const experiences: readonly Experience[] = [
     ],
     stack: ['SQL', 'Process Analysis', 'Reporting', 'Workflow Optimization'],
     accent: ['#E8793C', '#F5C089'],
+    logo: '/company_logos/flipkart.png',
   },
 ];
 
@@ -148,6 +155,7 @@ export const projects: readonly Project[] = [
     year: '2025',
     featured: true,
     visual: 'voice',
+    image: '/images/projects/project-voice-ai-system.jpg',
     palette: ['#4338CA', '#8B7CF6'],
     summary:
       'A real-time, voice-driven multi-agent system: speech in, retrieval-grounded reasoning across specialised agents, speech out — under two seconds end to end.',
@@ -173,6 +181,7 @@ export const projects: readonly Project[] = [
     year: '2025',
     featured: false,
     visual: 'resume',
+    image: '/images/projects/project-ai-resume-parsing.jpg',
     palette: ['#0EA5E9', '#7DD3FC'],
     summary: 'A backend system that ingests unstructured resumes and returns validated, structured candidate records at scale.',
     highlights: [
@@ -197,6 +206,7 @@ export const projects: readonly Project[] = [
     year: '2025',
     featured: true,
     visual: 'inventory',
+    image: '/images/projects/project-smart-inventory.jpg',
     palette: ['#8B5CF6', '#C4B5FD'],
     summary:
       'A logistics backend that manages hubs, inventory batches, vehicles and drivers, with automatic FIFO-based dispatch and vehicle/driver assignment.',
@@ -222,6 +232,7 @@ export const projects: readonly Project[] = [
     year: '2025',
     featured: false,
     visual: 'community',
+    image: '/images/projects/project-community-family.jpg',
     palette: ['#06B6D4', '#67E8F9'],
     summary:
       'A full-stack registration platform that lets community administrators onboard and manage family records, replacing manual paperwork with a structured, searchable system.',
@@ -244,6 +255,7 @@ export const projects: readonly Project[] = [
     year: '2025',
     featured: false,
     visual: 'auth',
+    image: '/images/projects/project-login-auth.jpg',
     palette: ['#4F46E5', '#A5B4FC'],
     summary:
       'A FastAPI proof-of-concept exploring production-grade authentication rules: encrypted password storage, forced password rotation and account lockout after repeated failed attempts.',
@@ -263,6 +275,7 @@ export const projects: readonly Project[] = [
     year: '2024',
     featured: false,
     visual: 'food',
+    image: '/images/projects/project-food-delivery.jpg',
     palette: ['#E8793C', '#FBBF83'],
     summary: 'An end-to-end ordering platform built across React, Express and MongoDB.',
     highlights: [
@@ -281,6 +294,7 @@ export const projects: readonly Project[] = [
     year: '2024',
     featured: false,
     visual: 'crime',
+    image: '/images/projects/project-crime-analysis.jpg',
     palette: ['#EC4899', '#F9A8D4'],
     summary: 'An academic classification study: preprocessing, feature engineering and KNN modelling, served through a Flask interface.',
     highlights: [
@@ -476,6 +490,7 @@ export const certifications: readonly Credential[] = [
     issued: 'Jun 2024',
     kind: 'certificate',
     assetUrl: '/certificates/python-cert.pdf',
+    logo: '/images/issuers/internshala.webp',
     credentialId: 'hxa2pdgs379',
     detail: 'OOP principles, SQLite database integration, PyQt5 GUI development and final evaluation. Scored 78%.',
   },
@@ -506,6 +521,7 @@ export const certifications: readonly Credential[] = [
     issued: 'Apr 2024',
     kind: 'internship',
     assetUrl: '/certificates/data-valley-internship.pdf',
+    logo: '/images/issuers/data_valley.webp',
     detail: '240-hour internship in collaboration with the AP State Council of Higher Education.',
   },
   {
@@ -515,6 +531,7 @@ export const certifications: readonly Credential[] = [
     issued: 'Oct 2023',
     kind: 'internship',
     assetUrl: '/certificates/wsa-internship.pdf',
+    logo: '/images/issuers/webstack.webp',
     credentialId: 'WMSI23_001',
     detail: 'Hands-on MERN stack development covering React, Express, MongoDB, Node.js and complete product lifecycle delivery.',
   },
@@ -573,5 +590,36 @@ export const certifications: readonly Credential[] = [
     kind: 'badge',
     assetUrl: '/certificates/micro1-ai-interview.jpg',
     detail: 'AI-evaluated technical and system problem solving interview certification.',
+  },
+];
+
+export const services: readonly Service[] = [
+  {
+    id: 'ai-applications',
+    title: 'AI & LLM Applications',
+    description: 'LLM features that hold up in production — grounded in your data, measured, and cheap enough to run.',
+    deliverables: ['RAG pipelines with vector search', 'LLM API integration & prompt design', 'Evaluation and guardrails'],
+    icon: Brain,
+  },
+  {
+    id: 'agentic-systems',
+    title: 'Agentic Workflows',
+    description: 'Multi-step agents with real tools, conditional routing and state you can inspect when something goes wrong.',
+    deliverables: ['LangGraph / LangChain orchestration', 'Tool & function calling', 'Human-in-the-loop checkpoints'],
+    icon: Bot,
+  },
+  {
+    id: 'backend',
+    title: 'Backend & API Engineering',
+    description: 'FastAPI services designed around clear boundaries, typed contracts and predictable failure modes.',
+    deliverables: ['FastAPI / REST services', 'Microservice architecture', 'Async & background jobs'],
+    icon: Server,
+  },
+  {
+    id: 'frontend',
+    title: 'Frontend & Product UI',
+    description: 'React interfaces that feel considered — component architecture, responsive layout, real accessibility.',
+    deliverables: ['React + TypeScript apps', 'Dashboards & data UI', 'Design-system components'],
+    icon: Palette,
   },
 ];

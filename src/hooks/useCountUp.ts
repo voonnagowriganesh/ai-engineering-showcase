@@ -1,17 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 
 /**
- * Animates a number from 0 to `target` once the element scrolls into view.
- * Respects prefers-reduced-motion by jumping straight to the target.
+ * Animates a number from 0 to `target` once the element scrolls into view
+ * and `enabled` is true (used to hold hero counters until the preloader
+ * reveals the page). Respects prefers-reduced-motion by jumping straight to
+ * the target.
  */
-export function useCountUp(target: number, durationMs = 1400) {
+export function useCountUp(target: number, durationMs = 1400, enabled = true) {
   const ref = useRef<HTMLSpanElement | null>(null);
   const [value, setValue] = useState(0);
   const started = useRef(false);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || !enabled) return;
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -40,7 +42,7 @@ export function useCountUp(target: number, durationMs = 1400) {
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [target, durationMs]);
+  }, [target, durationMs, enabled]);
 
   return { ref, value };
 }

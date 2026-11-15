@@ -4,10 +4,15 @@ import { SectionHeading } from './SectionHeading';
 import { ProjectCard } from './ProjectCard';
 import { ProjectModal } from './ProjectModal';
 import { Reveal } from './Reveal';
+import { track } from '../lib/analytics';
 import type { Project } from '../types';
 
 export function Projects() {
-  const [active, setActive] = useState<Project | null>(null);
+  const [active, setActiveState] = useState<Project | null>(null);
+  const setActive = (project: Project | null) => {
+    if (project) track('project-open', { id: project.id });
+    setActiveState(project);
+  };
   const [reduceMotion, setReduceMotion] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 

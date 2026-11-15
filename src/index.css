@@ -73,6 +73,12 @@ body.modal-open {
   overflow: hidden;
 }
 
+/* Keep the scrollbar's space reserved, so locking scroll for a modal or the
+   mobile menu never shifts the page sideways. */
+html {
+  scrollbar-gutter: stable;
+}
+
 .text-gradient-signal {
   background-image: linear-gradient(100deg, #4338ca 0%, #6e62e8 45%, #e8793c 100%);
   -webkit-background-clip: text;

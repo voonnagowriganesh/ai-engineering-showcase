@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Award, BadgeCheck, ChevronLeft, ChevronRight, ExternalLink, FileText, GraduationCap, X } from 'lucide-react';
 import { certifications } from '../data/content';
 import { SectionHeading } from './SectionHeading';
+import { track } from '../lib/analytics';
 import type { Credential, CredentialKind } from '../types';
 
 const kindMeta: Record<CredentialKind, { icon: typeof Award; label: string; color: string }> = {
@@ -249,12 +250,25 @@ function CertFace({ cert, hint }: { cert: Credential; hint?: string }) {
   const meta = kindMeta[cert.kind];
   return (
     <>
-      <span
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-        style={{ backgroundColor: `${meta.color}14`, color: meta.color }}
-      >
-        <meta.icon size={18} />
-      </span>
+      {cert.logo ? (
+        <span className="flex h-10 w-[4.5rem] shrink-0 items-center justify-center overflow-hidden rounded-xl border border-ink/10 bg-white px-1.5 py-1">
+          <img
+            src={cert.logo}
+            alt=""
+            width={64}
+            height={34}
+            draggable={false}
+            className="max-h-full max-w-full object-contain"
+          />
+        </span>
+      ) : (
+        <span
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+          style={{ backgroundColor: `${meta.color}14`, color: meta.color }}
+        >
+          <meta.icon size={18} />
+        </span>
+      )}
       <h3 className="mt-4 line-clamp-2 shrink-0 font-display text-[0.95rem] font-semibold leading-snug text-ink sm:line-clamp-3">
         {cert.title}
       </h3>
@@ -309,6 +323,7 @@ export function Certifications() {
       },
     });
     setHiddenIndex(index);
+    track('cert-flip', { id: certifications[index]?.id ?? String(index) });
   };
 
   const onCardClick = (index: number) => {

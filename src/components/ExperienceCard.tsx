@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { MapPin } from 'lucide-react';
+import { Lock, MapPin } from 'lucide-react';
 import type { Experience } from '../types';
 import { AvatarGlyph } from './AvatarGlyph';
 import { useTilt } from '../hooks/useTilt';
@@ -25,7 +25,8 @@ export function ExperienceCard({ experience, index }: ExperienceCardProps) {
         </div>
 
         <div className="grid gap-6 sm:grid-cols-[9rem_1fr] sm:items-start">
-          {/* 3D "photo" medallion — generative anime/low-poly portrait, not a real photo */}
+          {/* 3D medallion: the real company logo on a white tile, or a
+              generative glyph when no logo is available. */}
           <div className="[perspective:900px]">
             <div
               ref={tilt.ref}
@@ -36,9 +37,23 @@ export function ExperienceCard({ experience, index }: ExperienceCardProps) {
               }}
               className="relative mx-auto h-28 w-28 shrink-0 rounded-3xl bg-paper shadow-card transition-transform duration-150 ease-out sm:h-36 sm:w-36"
             >
-              <div className="h-full w-full overflow-hidden rounded-3xl">
-                <AvatarGlyph accent={experience.accent} seed={index} active={experience.status === 'current'} />
-              </div>
+              {experience.logo ? (
+                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-3xl border border-ink/10 bg-white p-4 sm:p-5">
+                  <img
+                    src={experience.logo}
+                    alt={`${experience.company} logo`}
+                    width={112}
+                    height={112}
+                    loading="lazy"
+                    decoding="async"
+                    className="max-h-full max-w-full object-contain"
+                  />
+                </div>
+              ) : (
+                <div className="h-full w-full overflow-hidden rounded-3xl">
+                  <AvatarGlyph accent={experience.accent} seed={index} active={experience.status === 'current'} />
+                </div>
+              )}
               {experience.status === 'current' && (
                 <span className="absolute -right-2 -top-2 flex h-7 items-center rounded-full border border-white bg-sage px-2.5 text-[10px] font-bold uppercase tracking-wide text-paper shadow-soft">
                   Current
@@ -62,7 +77,7 @@ export function ExperienceCard({ experience, index }: ExperienceCardProps) {
                   {experience.company}
                 </p>
               </div>
-              <div className="flex flex-col items-end gap-1">
+              <div className="flex flex-col items-start gap-1 sm:items-end">
                 <span className="label-mono rounded-full bg-paper-deep px-3 py-1 text-[11px] text-ink-soft">
                   {experience.period}
                 </span>
@@ -96,6 +111,14 @@ export function ExperienceCard({ experience, index }: ExperienceCardProps) {
                 </span>
               ))}
             </div>
+
+            {experience.confidential ? (
+              <p className="mt-5 flex items-start gap-2.5 border-t border-ink/10 pt-4 text-xs leading-relaxed text-ink-faint">
+                <Lock size={13} className="mt-0.5 shrink-0" />
+                Work at {experience.company} is covered by confidentiality. Responsibilities and technologies are
+                described in general terms; internal products, architecture and metrics are deliberately omitted.
+              </p>
+            ) : null}
           </motion.div>
         </div>
       </div>

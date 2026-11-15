@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpRight, X } from 'lucide-react';
 import type { Project } from '../types';
+import { track } from '../lib/analytics';
 import { ProjectVisual } from './ProjectVisual';
 
 interface ProjectModalProps {
@@ -60,9 +61,21 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                region in the overlay, so there is no ambiguity about which
                element should receive wheel/touch scroll events. */}
             <div className="overflow-y-auto">
-              <div className="relative h-44 w-full sm:h-56" style={{ backgroundColor: `${project.palette[0]}0d` }}>
-                <ProjectVisual variant={project.visual} palette={project.palette} id={`modal-${project.id}`} />
-                <div className="absolute inset-0 bg-gradient-to-t from-paper via-transparent to-transparent" />
+              <div
+                className="relative h-48 w-full overflow-hidden sm:h-64"
+                style={{ backgroundColor: `${project.palette[0]}0d` }}
+              >
+                {project.image ? (
+                  <img
+                    src={project.image}
+                    alt={`${project.title} preview`}
+                    className="h-full w-full object-cover"
+                    decoding="async"
+                  />
+                ) : (
+                  <ProjectVisual variant={project.visual} palette={project.palette} id={`modal-${project.id}`} />
+                )}
+                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-paper to-transparent" />
               </div>
 
               <div className="p-6 sm:p-8">
@@ -120,6 +133,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                       href={link.href}
                       target="_blank"
                       rel="noreferrer"
+                      onClick={() => track('github-click', { project: project.id, label: link.label })}
                       className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-paper transition hover:-translate-y-0.5"
                     >
                       {link.label}

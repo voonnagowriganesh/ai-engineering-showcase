@@ -1,3 +1,5 @@
+import { useId } from 'react';
+
 interface BackgroundArtProps {
   variant?: 'hero' | 'soft' | 'dot-grid';
 }
@@ -8,6 +10,10 @@ interface BackgroundArtProps {
  * never interferes with interaction or scroll.
  */
 export function BackgroundArt({ variant = 'soft' }: BackgroundArtProps) {
+  // Unique per instance: the dot-grid variant renders in several sections, and
+  // a repeated pattern id is invalid and resolves to whichever comes first.
+  const patternId = `dots-${useId().replace(/:/g, '')}`;
+
   if (variant === 'hero') {
     return (
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -16,11 +22,11 @@ export function BackgroundArt({ variant = 'soft' }: BackgroundArtProps) {
         <div className="absolute bottom-[-10rem] left-1/3 h-[24rem] w-[24rem] rounded-full bg-sage/15 blur-[120px]" />
         <svg className="absolute inset-0 h-full w-full opacity-[0.35]" aria-hidden="true">
           <defs>
-            <pattern id="hero-dots" width="26" height="26" patternUnits="userSpaceOnUse">
+            <pattern id={patternId} width="26" height="26" patternUnits="userSpaceOnUse">
               <circle cx="2" cy="2" r="1.4" fill="#1B1712" fillOpacity="0.14" />
             </pattern>
           </defs>
-          <rect width="100%" height="100%" fill="url(#hero-dots)" />
+          <rect width="100%" height="100%" fill={`url(#${patternId})`} />
         </svg>
       </div>
     );
@@ -30,11 +36,11 @@ export function BackgroundArt({ variant = 'soft' }: BackgroundArtProps) {
     return (
       <svg className="pointer-events-none absolute inset-0 h-full w-full opacity-60" aria-hidden="true">
         <defs>
-          <pattern id="soft-dots" width="30" height="30" patternUnits="userSpaceOnUse">
+          <pattern id={patternId} width="30" height="30" patternUnits="userSpaceOnUse">
             <circle cx="2" cy="2" r="1.3" fill="#1B1712" fillOpacity="0.08" />
           </pattern>
         </defs>
-        <rect width="100%" height="100%" fill="url(#soft-dots)" />
+        <rect width="100%" height="100%" fill={`url(#${patternId})`} />
       </svg>
     );
   }

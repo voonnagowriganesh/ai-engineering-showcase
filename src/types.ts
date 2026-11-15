@@ -21,6 +21,9 @@ export interface Identity {
   linkedin: string;
   medium: string;
   availability: string;
+  /** Served from public/; used for every Resume download link. */
+  resumeUrl: string;
+  resumeFileName: string;
 }
 
 export interface Metric {
@@ -42,6 +45,10 @@ export interface Experience {
   responsibilities: readonly string[];
   stack: readonly string[];
   accent: readonly [string, string];
+  /** Company logo under public/. Falls back to the generative glyph. */
+  logo?: string;
+  /** Work under NDA: the card states why there is no case study. */
+  confidential?: boolean;
 }
 
 export interface ProjectLink {
@@ -77,6 +84,8 @@ export interface Project {
   stack: readonly string[];
   metrics?: readonly ProjectMetric[];
   links: readonly ProjectLink[];
+  /** Real project artwork under public/; ProjectVisual is the fallback. */
+  image?: string;
 }
 
 export interface SkillItem {
@@ -130,9 +139,19 @@ export interface Credential {
   verifyUrl?: string;
   /** Path to the certificate file under public/, e.g. /certificates/x.pdf */
   assetUrl?: string;
+  /** Issuer logo under public/; replaces the kind icon on the card. */
+  logo?: string;
 }
 
 export interface Strength {
   title: string;
+  icon: IconType;
+}
+
+export interface Service {
+  id: string;
+  title: string;
+  description: string;
+  deliverables: readonly string[];
   icon: IconType;
 }

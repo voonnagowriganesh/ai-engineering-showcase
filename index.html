@@ -5,6 +5,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#fbf8f2" />
     <meta
       name="description"
       content="Voonna Gowri Ganesh — AI Developer building intelligent, production-ready products across AI, full-stack engineering and system design."
@@ -16,8 +17,17 @@
       href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <!-- Paint the paper colour before any JS/CSS loads (no white flash), and
+         show the preloader's empty ring until React mounts the real one. -->
+    <style>
+      html, body { background: #fbf8f2; margin: 0; }
+      #boot { position: fixed; inset: 0; z-index: 300; display: grid; place-items: center; background: #fbf8f2; }
+      #boot::before { content: ''; width: 10rem; height: 10rem; border-radius: 50%; box-shadow: inset 0 0 0 0.6px rgba(27, 23, 18, 0.14); }
+      @media (min-width: 640px) { #boot::before { width: 12rem; height: 12rem; } }
+    </style>
   </head>
   <body>
+    <div id="boot" role="status" aria-label="Loading portfolio"></div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

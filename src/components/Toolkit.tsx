@@ -55,7 +55,7 @@ export function Toolkit() {
 
         <motion.div
           layout
-          className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
+          className="mt-8 grid grid-cols-3 gap-2.5 sm:gap-3 md:grid-cols-4 lg:grid-cols-6"
         >
           {filtered.map((tool) => (
             <motion.div
@@ -65,12 +65,12 @@ export function Toolkit() {
               animate={{ opacity: 1, scale: 1 }}
               whileHover={{ y: -4, scale: 1.03 }}
               transition={{ duration: 0.25 }}
-              className="group flex flex-col items-center gap-2.5 rounded-2xl border border-ink/10 bg-paper p-4 text-center shadow-soft"
+              className="group flex min-w-0 flex-col items-center gap-2 rounded-2xl border border-ink/10 bg-paper px-2 py-3.5 text-center shadow-soft sm:gap-2.5 sm:p-4"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-signal/10 text-signal transition-colors group-hover:bg-signal group-hover:text-paper">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-signal/10 sm:h-11 sm:w-11 text-signal transition-colors group-hover:bg-signal group-hover:text-paper">
                 <tool.icon size={20} />
               </span>
-              <span className="text-xs font-medium text-ink-soft">{tool.name}</span>
+              <span className="max-w-full break-words text-[11px] font-medium leading-tight text-ink-soft sm:text-xs">{tool.name}</span>
             </motion.div>
           ))}
         </motion.div>
