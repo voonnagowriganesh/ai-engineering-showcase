@@ -3,11 +3,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Preloader } from '@/components/Preloader';
 import { CustomCursor } from '@/components/chrome/CustomCursor';
 import { Navbar } from '@/components/chrome/Navbar';
-import {
-  BackToTop,
-  ScrollProgressBar,
-  SectionRail,
-} from '@/components/chrome/ScrollProgress';
+import { BackToTop, ScrollProgressBar } from '@/components/chrome/ScrollProgress';
 import { Hero } from '@/components/sections/Hero';
 import { AboutAndExperience } from '@/components/sections/AboutAndExperience';
 import { TechnicalArsenal } from '@/components/sections/TechnicalArsenal';
@@ -90,7 +86,6 @@ export function App(): React.JSX.Element {
 
       <ScrollProgressBar />
       <Navbar onOpenCommandPalette={openPalette} />
-      <SectionRail />
 
       <main id="main">
         <ErrorBoundary label="Hero">

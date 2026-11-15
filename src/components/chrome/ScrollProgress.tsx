@@ -1,10 +1,6 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowUp } from 'lucide-react';
-import { navSections } from '@/data/profile';
-import { useActiveSection, useScrollState, useScrollTo } from '@/hooks/useScroll';
-import { cn } from '@/lib/utils';
-
-const SECTION_IDS = navSections.map((section) => section.id);
+import { useScrollState, useScrollTo } from '@/hooks/useScroll';
 
 /** Thin gradient bar pinned to the top edge, tracking document progress. */
 export function ScrollProgressBar(): React.JSX.Element {
@@ -20,60 +16,6 @@ export function ScrollProgressBar(): React.JSX.Element {
         style={{ transform: `scaleX(${progress})` }}
       />
     </div>
-  );
-}
-
-/**
- * Vertical section rail (desktop only).
- *
- * Shows where the visitor is in the document and lets them jump. Labels are
- * revealed on hover so the rail stays quiet at rest.
- */
-export function SectionRail(): React.JSX.Element {
-  const activeSection = useActiveSection(SECTION_IDS, 'hero');
-  const scrollTo = useScrollTo();
-
-  return (
-    <nav
-      aria-label="Section navigation"
-      className="fixed top-1/2 right-6 z-[90] hidden -translate-y-1/2 xl:block"
-    >
-      <ul className="flex flex-col items-end gap-1">
-        {navSections.map((section) => {
-          const isActive = activeSection === section.id;
-          return (
-            <li key={section.id}>
-              <button
-                type="button"
-                onClick={() => scrollTo(section.id, -16)}
-                aria-label={`Go to ${section.label}`}
-                aria-current={isActive ? 'true' : undefined}
-                className="group flex items-center justify-end gap-3 py-1.5"
-              >
-                <span
-                  className={cn(
-                    'font-mono text-2xs tracking-wider whitespace-nowrap transition-all duration-300',
-                    isActive
-                      ? 'text-ink opacity-100'
-                      : 'text-ink-subtle opacity-0 group-hover:opacity-100',
-                  )}
-                >
-                  {section.label}
-                </span>
-                <span
-                  className={cn(
-                    'block h-px transition-all duration-500 [transition-timing-function:var(--ease-out-expo)]',
-                    isActive
-                      ? 'w-8 bg-accent-2'
-                      : 'w-4 bg-line-strong group-hover:w-6 group-hover:bg-ink-subtle',
-                  )}
-                />
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
   );
 }
 
